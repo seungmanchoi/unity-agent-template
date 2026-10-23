@@ -64,8 +64,10 @@ for (const [pkg, version] of Object.entries(PINS).filter(([k]) => k !== 'editor'
   expect(deps[pkg] === version, `Packages/manifest.json: ${pkg} must be pinned to ${version}`);
 for (const [pkg, version] of Object.entries(deps))
   expect(
-    /^\d+\.\d+\.\d+(-[\w.]+)?$/.test(version) || /#[0-9a-f]{7,40}$/.test(version),
-    `Packages/manifest.json: ${pkg} "${version}" is not an exact version (or a git URL pinned to a commit)`,
+    /^\d+\.\d+\.\d+(-[\w.]+)?$/.test(version) ||
+      /#[0-9a-f]{7,40}$/.test(version) ||
+      /^file:.*-\d+\.\d+\.\d+\.tgz$/.test(version), // Google's UPM tarballs (Firebase, GMA)
+    `Packages/manifest.json: ${pkg} "${version}" is not an exact version (or a commit-pinned git URL / versioned .tgz)`,
   );
 expect(
   /activeInputHandler: 1\b/.test(read('unity/ProjectSettings/ProjectSettings.asset')),
