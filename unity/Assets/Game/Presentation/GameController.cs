@@ -30,7 +30,6 @@ namespace Game.Presentation
         Rect _lastSafe;
         RectTransform _safe, _arena, _target;
         Text _title, _hint, _hud;
-        static readonly Color Ink = new Color(0.94f, 0.92f, 0.86f), Accent = new Color(0.35f, 0.89f, 0.82f);
 
         void Awake()
         {
@@ -70,15 +69,15 @@ namespace Game.Presentation
 
             var targetImg = Rect("Target", _arena).gameObject.AddComponent<Image>();
             targetImg.sprite = Disc();
-            targetImg.color = Accent;
+            targetImg.color = Theme.Accent;
             _target = targetImg.rectTransform;
             _target.anchorMin = _target.anchorMax = Vector2.zero;
 
-            _hud = Label("Hud", _safe, 48, TextAnchor.UpperCenter);
-            Place(_hud.rectTransform, new Vector2(0.5f, 1f), new Vector2(0, -40), new Vector2(RefW, 80));
-            _title = Label("Title", _safe, 96, TextAnchor.MiddleCenter);
+            _hud = Label("Hud", _safe, Theme.Body, TextAnchor.UpperCenter);
+            Place(_hud.rectTransform, new Vector2(0.5f, 1f), new Vector2(0, -Theme.Gutter), new Vector2(RefW, 80));
+            _title = Label("Title", _safe, Theme.Display, TextAnchor.MiddleCenter);
             Place(_title.rectTransform, new Vector2(0.5f, 0.6f), Vector2.zero, new Vector2(RefW, 360));
-            _hint = Label("Hint", _safe, 44, TextAnchor.MiddleCenter);
+            _hint = Label("Hint", _safe, Theme.Body, TextAnchor.MiddleCenter);
             Place(_hint.rectTransform, new Vector2(0.5f, 0.2f), Vector2.zero, new Vector2(RefW, 120));
         }
 
@@ -169,7 +168,7 @@ namespace Game.Presentation
             var text = Rect(name, parent).gameObject.AddComponent<Text>();
             text.font = font;
             text.fontSize = size;
-            text.color = Ink;
+            text.color = Theme.Ink;
             text.alignment = anchor;
             text.raycastTarget = false;
             return text;

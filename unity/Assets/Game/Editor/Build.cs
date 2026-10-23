@@ -34,7 +34,7 @@ namespace Game.Editor
             var cam = camGo.AddComponent<Camera>();
             cam.orthographic = true;
             cam.clearFlags = CameraClearFlags.SolidColor;
-            cam.backgroundColor = new Color(0.07f, 0.09f, 0.10f);
+            cam.backgroundColor = Theme.Background;
             camGo.transform.position = new Vector3(0, 0, -10);
             camGo.AddComponent<AudioListener>();
 
