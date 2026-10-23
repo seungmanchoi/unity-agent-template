@@ -85,8 +85,11 @@ platform :ios do
       use_automatic_signing: false, path: xcproj, team_id: TEAM_ID,
       code_sign_identity: "Apple Distribution", profile_name: profile, targets: ["Unity-iPhone"]
     )
+    # GMA·Firebase 같은 SDK 를 넣으면 EDM4U 가 pod install 로 workspace 를 만든다 — 있으면 그것을 빌드한다.
+    workspace = "#{ROOT}/unity/Build/ios/Unity-iPhone.xcworkspace"
+    target = File.exist?(workspace) ? { workspace: workspace } : { project: xcproj }
     build_app(
-      project: xcproj, scheme: "Unity-iPhone", configuration: "Release", export_method: "app-store",
+      **target, scheme: "Unity-iPhone", configuration: "Release", export_method: "app-store",
       output_directory: "#{ROOT}/build-output", output_name: "#{APP_SLUG}.ipa", clean: true,
       export_options: { signingStyle: "manual", teamID: TEAM_ID, provisioningProfiles: { APP_ID => profile } }
     )
