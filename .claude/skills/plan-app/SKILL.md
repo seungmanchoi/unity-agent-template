@@ -41,7 +41,7 @@ description: "모바일 게임 기획서(PRD)를 작성하는 스킬. 코어 루
 백엔드가 있으면 엔드포인트와 Request/Response 초안을 추가한다(대부분 오프라인 게임은 없음).
 
 ### Step 6: MVP 범위
-- 1차(P0)·2차(P1) 목록 → `_workspace/plan/prd.md`, KPI 는 `_workspace/plan/kpis.md`
+- 1차(P0)·2차(P1) 목록 → `_workspace/plan/prd.md`, 모듈 맵은 `_workspace/plan/module-map.md`, KPI 는 `_workspace/plan/kpis.md`
 
 ## Agent Delegation
 | Step | Agent |
