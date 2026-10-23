@@ -1,59 +1,63 @@
 # Analytics & 핵심 지표 (MANDATORY)
 
-> 이 문서는 CLAUDE.md 에서 옮긴 상세 규칙이다. **Hard Threshold 표는 CLAUDE.md 가 정본**이며, 여기 없는 통과 기준은 CLAUDE.md 를 따른다.
+> CLAUDE.md 에서 옮긴 상세 규칙이다. **Hard Threshold 표는 CLAUDE.md 가 정본**이며, 여기 없는 통과 기준은 CLAUDE.md 를 따른다.
 
-**모든 앱은 출시 직후부터 측정 가능한 핵심 지표(KPI)를 수집한다.** 이를 위해 Firebase Analytics를 표준 도구로 사용한다. KPI 정의는 기획 단계에서, 이벤트 수집 코드는 구현 단계에서 반드시 포함되어야 한다.
+모든 게임은 출시 직후부터 KPI 를 수집한다. PRD 에 북극성 지표 1개와 4축 기본 세트를 정의하고, 이벤트는 Firebase Unity SDK 를 Platform 의 `Analytics` 래퍼로만 보낸다. 템플릿에는 SDK 가 없다. 출시 빌드 전에 넣는다.
 
-## Firebase 표준 스택
+## KPI (PRD 필수)
 
-| 영역 | 패키지 | 용도 |
+| 축 | 예시 지표 |
+|----|-----------|
+| 북극성 | 주간 완료 판 수, D7 재방문 플레이어 비율 등 게임 핵심 가치 1개 |
+| 획득 | 신규 설치, 첫 실행 → 튜토리얼 시작 |
+| 활성 | 튜토리얼 완료율, 첫 판 완료율, 첫 승리까지 시간 |
+| 유지 | D1/D7/D30, 세션 수/일, 세션 길이 |
+| 수익화 | 광고 노출/DAU, 리워드 시청률, IAP 전환 |
+
+## 표준 스택
+
+| 영역 | 패키지 | 비고 |
 |------|--------|------|
-| 핵심 | `@react-native-firebase/app` | Firebase 초기화 |
-| Analytics | `@react-native-firebase/analytics` | 이벤트/사용자 속성/스크린 추적 |
-| Crashlytics | `@react-native-firebase/crashlytics` | 충돌/예외 리포트 (KPI 신뢰도 보호) |
-| Remote Config (선택) | `@react-native-firebase/remote-config` | 실험/플래그 |
+| Analytics | Firebase Unity SDK **13.17.0** `FirebaseAnalytics` | 정확히 고정. `.unitypackage` 를 batchmode `-importPackage` 로 넣는다 |
+| Crash | 같은 버전 `FirebaseCrashlytics` | 릴리스 빌드에서 항상 켠다 |
 
-Expo plugin 등록: `app.config.ts` → `plugins: ['@react-native-firebase/app', '@react-native-firebase/crashlytics']` 및 `expo-build-properties`로 iOS `useFrameworks: 'dynamic'` 설정. RN Firebase 26은 Firebase iOS SDK를 **SPM**으로 가져오며 SPM은 dynamic frameworks가 필수다 — `'static'`만 단독으로 쓰면 `pod install`이 실패한다(정적이 꼭 필요하면 RNFB app plugin `{ ios: { disableSPM: true } }` + `'static'` + 모든 RNFB pod을 `forceStaticLinking`). **v26은 namespaced API(`analytics().logEvent`)를 삭제했다** — modular API(`logEvent(getAnalytics(), ...)`)만 쓴다.
-
-## 측정 표준 KPI (기본 세트)
-
-**모든 앱에 기본으로 정의해야 하는 4개 축:**
-
-| 축 | 대표 지표 | Firebase 이벤트 |
-|----|----------|-----------------|
-| 획득 (Acquisition) | 신규 설치, 첫 실행 | `first_open` (자동), `app_install` |
-| 활성 (Activation) | DAU/WAU, 첫 핵심 행동 완료율 | `activation` (커스텀), `screen_view` (자동) |
-| 유지 (Retention) | D1/D7/D30 리텐션, 세션 길이 | `session_start` (자동), `user_engagement` (자동) |
-| 수익화 (Monetization) | 광고 노출/클릭, IAP 매출, ARPU | `ad_impression` (자동), `purchase` |
-
-추가로 각 앱의 **북극성 지표(North Star Metric)** 1개를 PRD에서 명시한다 (예: "주간 사진 N장 촬영 사용자 수").
-
-## 이벤트 네이밍 규칙
-
-- snake_case, 영문 소문자, 동사_명사 형식 (`tap_camera_capture`, `view_gallery_grid`)
-- 예약어 금지: Firebase 자동 이벤트(`session_start`, `first_open` 등)와 중복 금지. `screen_view`는 커스텀 이벤트로 만들지 않고 `logScreenView()`로만 보낸다(루트 `_layout.tsx`가 라우트 패턴으로 자동 기록, `firebase.json`에서 네이티브 자동 화면 수집은 끔)
-- 파라미터는 25개 이하, 키 길이 ≤ 40자, 값 길이 ≤ 100자
-- PII 금지: 이메일/전화번호/실명/정확한 위치는 절대 파라미터로 보내지 않는다
-
-## 코드 통합 위치 (FSD)
+## 래퍼 (Platform)
 
 ```
-src/shared/lib/analytics/
-├── analytics.ts       # 파사드 — initAnalytics, logEvent, logScreenView
-├── firebase.ts        # Firebase 어댑터
-├── noop.ts            # no-op 어댑터 (Expo Go/네이티브 모듈 없을 때 자동 fallback)
-├── events.ts          # 이벤트 카탈로그 (EAnalyticsEvent 상수 + 파라미터 타입)
-├── types.ts           # IEventName, TEventParams 등
-└── index.ts           # barrel export
+unity/Assets/Game/Platform/Analytics/
+├── Analytics.cs        Init(), LogEvent(name, params), SetUserProperty, RecordError(Exception)
+├── AnalyticsEvents.cs  이벤트 이름 상수 (snake_case 동사_명사: start_game, complete_level, watch_rewarded_ad)
+└── AppEnv.cs           IsProd => !Application.isEditor && !Debug.isDebugBuild
 ```
 
-- 직접 `firebase.analytics().logEvent()` 호출 금지 — 반드시 `@shared/lib/analytics`의 래퍼 함수만 사용
-- 이벤트 이름은 `events.ts`의 상수로만 정의 (오타/중복 방지)
-- 수집은 `env.IS_PROD`에서만 켠다(`initAnalytics()`가 Analytics·Crashlytics collection을 설정) — dev/preview 트래픽이 KPI를 오염시키지 않게. Analytics 네이티브 기본값은 `firebase.json`의 `analytics_auto_collection_enabled: false`로 꺼 둔다 — 켜 두면 JS가 끄기 전에 dev/preview 새 설치의 `first_open`·`session_start`가 전송된다. production은 `initAnalytics()`가 켠 직후 `first_open`·`session_start`가 기록되고 값이 저장돼 다음 실행부터는 시작부터 수집한다. Crashlytics 기본값은 켜 둔다(`crashlytics_auto_collection_enabled` 미설정) — 끄면 RNFB가 JS 설정을 다음 실행에야 반영해 JS 전에 죽는 production 첫 실행 크래시가 업로드되지 않는다(dev는 RNFB가 debug 빌드에서 이미 끈다). `initAnalytics()`는 루트 `_layout.tsx` **모듈 최상단**에서 호출한다 — effect 안이면 먼저 실행되는 자식 화면의 마운트 이벤트가 첫 실행에서 버려진다
-- 비치명 에러는 `recordError(error)`(Crashlytics)로 보낸다. 루트 `ErrorBoundary`가 이미 호출한다
+- `Init()` 은 `FirebaseApp.CheckAndFixDependenciesAsync()` 가 `Available` 을 돌려준 뒤에만 Firebase 를 만진다. 그 전 호출은 버리거나 큐에 쌓는다.
+- `FirebaseAnalytics.SetAnalyticsCollectionEnabled(AppEnv.IsProd)` — 에디터·Development Build 는 수집하지 않는다.
+- 이벤트 이름은 `AnalyticsEvents` 상수만. 매직 스트링 금지. 파라미터에 PII(이메일, 이름, 기기 식별자 원문, 토큰) 금지.
+- 화면 상태가 바뀔 때마다 `screen_view`(`screen_name` = 상태 이름)를 래퍼가 기록한다.
+- Crashlytics 자동 수집을 끄지 않는다. 첫 실행 크래시가 올라와야 한다. 잡은 예외는 `Analytics.RecordError` 로 남긴다.
+- Presentation·Domain 은 `using Firebase` 를 쓰지 않는다(verify 가 잡는다).
 
-## 통합 단계
+## 설정 파일
 
-Firebase 콘솔 자동화(Playwright MCP) · 설정파일 배치/보안(`.gitignore` + EAS 환경변수(file)) · 패키지 설치/plugin 등록 · `src/shared/lib/analytics/` 모듈 작성 · `_layout.tsx` 초기화 · 이벤트 배선 · 빌드 검증의 **전체 절차는 `.claude/agents/api-integrator.md`("Firebase 콘솔 자동화", "Analytics 통합 규칙")** 와 orchestrate Phase 4d가 정본이다.
+- `GoogleService-Info.plist` / `google-services.json` 원본은 레포 루트 `firebase/` 에 둔다(gitignore).
+- 빌드 전에 `unity/Assets/Firebase/` 로 복사한다(`unity/.gitignore` 의 `**/GoogleService-Info.plist` 로 역시 커밋되지 않는다). 복사는 Editor 빌드 진입점에서 하고, 파일이 없으면 릴리스 빌드를 실패시킨다.
+- bundle id 는 `AppInfo.BundleId` 와 같아야 한다.
 
-> 요약 규칙: `app.config.ts` plugins 에 `@react-native-firebase/app`, `@react-native-firebase/crashlytics`, `expo-build-properties`(iOS `useFrameworks: 'dynamic'`)를 등록한다. Podfile을 고치는 커스텀 패치 플러그인은 쓰지 않는다. `GoogleService-Info.plist`/`google-services.json`은 `./firebase/`에 두고(gitignore) 절대 커밋하지 않는다. 로컬 빌드는 이 파일을 그대로 쓰고, 클라우드 빌드도 `.easignore`가 `firebase/`를 올려서 그대로 된다. `firebase/`를 아카이브에서 뺀 경우에만 file 타입 환경변수 `GOOGLE_SERVICE_INFO_PLIST` / `GOOGLE_SERVICES_JSON`으로 주입한다(`app.config.ts`가 이 두 이름을 먼저 읽는다 — `eas secret:*`은 deprecated, `eas env:create --type file --visibility secret`). RNFirebase 빌드 이슈 상세: `.claude/skills/orchestrate/references/deploy-build-troubleshooting.md`.
+## 에이전트 분담
+
+- **product-planner**: PRD KPI 표와 이벤트 카탈로그
+- **platform-integrator**: SDK 설치, 래퍼, 설정 파일 복사, Crashlytics
+- **presentation-developer**: 상태 전환·핵심 행동에서 `Analytics.LogEvent(AnalyticsEvents.X, …)`
+- **qa-reviewer**: 아래 표 검사
+
+## Hard Threshold
+
+| 기준 | 임계값 |
+|------|--------|
+| PRD 에 KPI 정의 누락 (북극성 + 4축) | **0개** |
+| Platform 밖 `using Firebase` / Firebase 직접 호출 | **0개** |
+| `AnalyticsEvents` 상수를 거치지 않은 이벤트 이름 | **0개** |
+| PII 가 담긴 이벤트 파라미터·user property | **0개** |
+| 에디터·Development Build 에서 수집 | **0개** |
+| Crashlytics 자동 수집 끄기 | **0개** |
+| `GoogleService-Info.plist` / `google-services.json` 커밋 | **0개** |

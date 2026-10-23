@@ -10,7 +10,7 @@ namespace Game.Platform
     /// <summary>
     /// One-shot impact haptics. iOS: UIImpactFeedbackGenerator (Assets/Plugins/iOS/AppHaptics.mm).
     /// Android: VibrationEffect one-shots with amplitude (API 26+). Editor and other platforms: no-op.
-    /// Native bridges and SDK calls live only in this assembly (docs/rules/platform.md).
+    /// Native bridges and SDK calls live only in this assembly (docs/rules/unity-workflow.md).
     /// </summary>
     public static class Haptics
     {

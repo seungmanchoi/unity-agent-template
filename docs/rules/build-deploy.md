@@ -1,53 +1,78 @@
-# EAS Build & Deploy Rules (MANDATORY)
+# 빌드 & 배포 (MANDATORY)
 
-> 이 문서는 CLAUDE.md 에서 옮긴 상세 규칙이다. **Hard Threshold 표는 CLAUDE.md 가 정본**이며, 여기 없는 통과 기준은 CLAUDE.md 를 따른다.
+> CLAUDE.md 에서 옮긴 상세 규칙이다. **Hard Threshold 표는 CLAUDE.md 가 정본**이며, 여기 없는 통과 기준은 CLAUDE.md 를 따른다.
 
-## 빌드와 제출
+배포는 `store-deploy` 플러그인(`/store-deploy`)으로만 한다. 빌드 단계만 Unity 어댑터로 바꾼다: Unity batchmode 가 Xcode/Gradle 산출물을 만들고, 이 레포의 fastlane lane 이 서명·업로드한다. 클라우드 빌드나 Editor GUI 의 Build 버튼은 쓰지 않는다.
 
-프로덕션 빌드는 **로컬이 기본**이다. 절차는 `store-deploy` 플러그인의 store-build·store-submit 스킬을 따른다.
+## 앱 식별자
 
-1. **빌드**: `eas build --local` 로 `build-output/` 에 산출물을 만든다. EAS 프로젝트가 없는 앱은 그 앱의 fastlane lane 으로 빌드한다
-2. **제출**: 로컬 산출물을 `eas submit --path <파일>` 로 올린다. EAS 프로젝트가 없는 앱은 fastlane 업로드 lane 을 쓴다
-3. **클라우드 EAS Build** (`eas build`) 는 사용자가 요청하거나 로컬 빌드가 안 될 때만 쓴다
-4. 제출 전 산출물의 version, buildNumber/versionCode, bundle id 와 `extra.appEnv`(아래)를 확인한다
+`unity/Assets/Game/Editor/AppInfo.cs` 한 곳이 정본이다(slug, 표시 이름, bundle id `com.seungmanchoi.<slug에서 - 제거>`, 버전). `npm run app:init` 이 바꾸고, `Build.Generate()` 가 PlayerSettings 에, fastlane `Fastfile`/`Appfile` 이 정규식으로 읽어 쓴다. 버전을 올릴 때는 `AppInfo.Version` 만 고친다.
 
-## 빌드 아카이브·앱 크기 최적화
+## iOS
 
-`.easignore`(빌드 아카이브 제외 목록)와 앱 크기 최적화 체크리스트(이미지 WebP · 미사용 폰트/의존성 제거 · Lottie 최적화 등)는 `.claude/skills/orchestrate/references/deploy-build-troubleshooting.md` 참고.
+```bash
+fastlane ios create_app      # bundle id 등록 + ASC 레코드 확인 (레코드는 ASC 웹에서 먼저 만든다)
+fastlane ios build_unity     # → build-output/<slug>.ipa
+fastlane ios upload          # TestFlight 업로드 (심사 제출 없음)
+fastlane ios tf_status       # 처리 상태·베타 그룹
+fastlane ios invite email:someone@example.com
+```
 
-## 빌드 환경 (APP_ENV) — 광고 ID·Analytics 분기 (CRITICAL)
+`build_unity` 순서:
+1. 마지막 TestFlight 빌드 번호 + 1 (이력이 없으면 1)
+2. Unity `BuildIOS` — env `APP_VERSION`(=`AppInfo.Version`), `BUILD_NUMBER` → `unity/Build/ios/`
+3. `update_info_plist` 로 `ITSAppUsesNonExemptEncryption=false`
+4. `sigh` 로 App Store 프로파일
+5. `update_code_signing_settings` 를 **`Unity-iPhone` 타깃에만**(UnityFramework 에 걸면 "does not support provisioning profiles")
+6. `gym` — EDM4U 가 만든 `Unity-iPhone.xcworkspace` 가 있으면 그것, 없으면 `.xcodeproj`
 
-`src/shared/config/env.ts`의 `IS_DEV` / `IS_PROD`는 `APP_ENV`(`development` | `preview` | `production`)로 결정되고, 실광고 ID(`AdUnitIds`)와 Analytics/Crashlytics 수집이 `IS_PROD`를 따른다.
+서명은 `login.keychain` 의 팀 공유 배포 인증서(`Apple Distribution: SeungMan Choi (6Y6T9LPHH3)`)로 한다. 새 인증서·전용 키체인을 만들지 않고, 비밀번호를 명령줄 인자로 넘기지 않는다(`~/works/CLAUDE.md` "iOS 배포 인증서").
 
-- **EAS 빌드**: `eas.json` 프로필의 `env.APP_ENV` + `environment`로 지정한다.
-- **APP_ENV가 없는 빌드**(로컬 fastlane/xcodebuild/gradle release): release 번들은 `production`, dev 번들은 `development`로 자동 판정된다(`__DEV__` 기준).
-- 개발용 npm 스크립트(`start*`, `ios`, `android`, `build:*`)는 `APP_ENV=development`를 붙여 둔다 — `expo start --no-dev`나 기기 release 실행이 실광고·Analytics로 새지 않게. fallback은 fastlane 같은 스토어 빌드 경로에서만 쓰인다.
-- 로컬 fastlane lane은 `eas.json` 프로필 env를 읽지 않는다 — `API_URL` 등 프로필 값을 lane에서 export한다 (안 하면 `app.config.ts` 기본값 localhost로 빌드된다).
-- `.env`에 `APP_ENV`를 넣지 않는다 — `.env`는 로컬 release 빌드의 앱 설정에도 로드된다.
-- 앱 환경 구분에 `NODE_ENV`를 쓰지 않는다. 과거 템플릿의 `NODE_ENV` 방식은 로컬 fastlane 빌드에 `nodeEnv: "development"`가 박혀 **스토어 빌드가 테스트 광고 ID로 출시**됐다.
-- 검증: `unzip -p build-output/*.ipa 'Payload/*.app/EXConstants.bundle/app.config' | grep -o '"appEnv":"[a-z]*"'` → 출력이 없거나(`production`으로 판정) `"appEnv":"production"`이어야 한다.
+## Android
 
-## 앱 이름 일관성 (MANDATORY)
+```bash
+export ANDROID_KEYSTORE=… ANDROID_KEY_ALIAS=… ANDROID_KEYSTORE_PASS=… ANDROID_KEY_PASS=…   # 셸 환경으로만
+fastlane android build_unity build:12   # → unity/Build/android/<slug>.aab (IL2CPP, ARM64)
+fastlane android internal               # internal 트랙 draft 업로드
+```
 
-스토어에 표시되는 앱 이름과 기기 홈 화면에 표시되는 앱 이름을 반드시 일치시킨다.
+- 새 앱의 첫 AAB 는 Play Developer API 가 거부한다. Play Console 웹에서 직접 올린 뒤부터 lane 을 쓴다.
+- 업로드 키스토어와 비밀번호는 레포·명령줄 인자·로그에 두지 않는다.
+- 개인 계정의 프로덕션 액세스 신청: `.claude/skills/orchestrate/references/play-production-access-application.md`.
 
-| 항목 | 설정 위치 | 설명 |
-|------|----------|------|
-| 홈 화면 이름 | `app.config.ts` → `withLocalizedAppName` plugin | 기기 언어별 앱 이름 |
-| iOS 스토어 이름 | `fastlane/metadata/ios/{lang}/name.txt` | ASC에 표시되는 이름 |
-| Android 스토어 이름 | `fastlane/metadata/android/{lang}/title.txt` | Play Store에 표시되는 이름 |
-| 기본 이름 | `app.config.ts` → `name` | 홈 화면 기본 언어 이름과 동일해야 함 |
+## 제출 전 확인
 
-**규칙:**
-- 위 4곳의 앱 이름이 언어별로 모두 동일해야 한다
-- 앱 이름 변경 시 4곳 모두 동시에 변경한다
-- 홈 화면 이름은 길면 잘리므로 30자 이내로 설정 (스토어 이름 제한과 동일)
-- `withLocalizedAppName` plugin (`plugins/withLocalizedAppName.js`)은 prebuild 시 iOS `InfoPlist.strings`와 Android `values-{locale}/strings.xml`을 자동 생성
-- plugin이 Xcode 프로젝트의 `PBXVariantGroup`에 파일을 등록해야 빌드에 포함됨
-- **`locales` 필드와 동시 사용 금지**: `app.config.ts`에 `locales: { ko: './...json' }`처럼 Expo의 locales 핸들러를 사용하면 plugin은 자동으로 iOS 처리를 생략한다. 이 경우 각 언어 JSON에 `CFBundleDisplayName` 키를 직접 추가해야 한다 (예: `{ "CFBundleDisplayName": "마이앱", "NSCameraUsageDescription": "..." }`). 두 방식이 동시에 동작하면 "Multiple commands produce InfoPlist.strings" 빌드 에러가 발생함
+```bash
+unzip -p build-output/<slug>.ipa 'Payload/*.app/Info.plist' | plutil -p - | grep -E 'CFBundleShortVersionString|CFBundleVersion|CFBundleIdentifier|ITSAppUsesNonExemptEncryption'
+```
 
-## 배포 전 준비 · 플랫폼 특수 고려 · 빌드 트러블슈팅
+- version = `AppInfo.Version`, build number 증가, bundle id = `AppInfo.BundleId`.
+- 스토어 빌드는 **Development Build 가 아니다**(`Debug.isDebugBuild == false`). 그래야 Analytics 수집·운영 광고 ID 가 켜진다.
+- 광고를 쓰면 운영 광고 단위 ID 가 placeholder 가 아닌지, ATT 문구가 앱 전용인지 본다(`ads.md`).
 
-배포 전 필수 준비(개인정보처리방침/아이콘/스크린샷/메타데이터/**Android 릴리즈 노트 언어별 500자 제한**/버전 관리), Android·iOS 특수 고려(Draft App 첫 제출은 Play Console 웹 수동 업로드 · `eas.json` `ascAppId` · `ITSAppUsesNonExemptEncryption` · ASC API Key 비대화식 제출), iOS/Android 빌드 트러블슈팅(xcodebuild 타임아웃 · `InfoPlist.strings` 중복 · **RNFirebase 26 SPM + dynamic frameworks 링크 규칙** · AdMob 17 Android 빌드 버그 · reanimated `libworklets` 캐시 · SDK 57 `prebuild` 기본 clean)은 모두 `.claude/skills/orchestrate/references/deploy-build-troubleshooting.md` 로 이전했다. 배포 시 해당 문서 + `/store-deploy` 스킬을 따른다.
+## 아이콘·스플래시
 
-**Android 프로덕션 액세스 신청(개인 계정)**: 비공개 테스트 14일+/12명+ 게이트 충족 후 제출하는 "프로덕션 액세스 신청" 양식의 전체 질문·답변 작성 원칙(사실 기반·날조 금지·300자·worked example)은 `.claude/skills/orchestrate/references/play-production-access-application.md`가 정본이다. 신청서 작성은 `api-integrator`의 "Play Console 프로덕션 액세스 신청 자동화" 능력이 담당하며, 작성 시 반드시 이 문서를 참고한다.
+- 아이콘: `unity/Assets/Game/Content/AppIcon.png` 1024×1024, **알파 없음**. `PlayerSettings.SetIcons` 가 모든 크기로 늘린다. 아이콘이 없으면 App Store 가 반려한다.
+- Personal 라이선스는 Unity 스플래시를 끌 수 없다. 출시 전에 알고 간다.
+
+## 앱 이름 일관성
+
+스토어 이름(`fastlane/metadata/ios/<lang>/name.txt`, `fastlane/metadata/android/<lang>/title.txt`)과 홈 화면 이름을 언어별로 같게, 30자 이내로 맞춘다. 기본 이름은 `AppInfo.Name`.
+
+> **TODO (템플릿에 아직 없음)**: 언어별 홈 화면 이름. iOS 는 `Editor` 의 `[PostProcessBuild]` 가 `<lang>.lproj/InfoPlist.strings` 에 `CFBundleDisplayName` 을 쓰고 `PBXProject` 에 등록한다(ATT 문구와 같은 파일이니 한 후처리기로 같이 쓴다). Android 는 `Assets/Plugins/Android/res/values-<lang>/strings.xml` 에 `app_name` 을 둔다(Unity 6 는 `.androidlib` 로 감싸야 한다). 다국어 스토어 이름을 넣는 게임은 첫 출시 전에 만든다.
+
+## 개인정보처리방침·메타데이터
+
+`~/works/seungmanchoi.github.io/<slug>/privacy.html`(en/ko/ja/zh 탭), `privacy_url.txt`·`support_url.txt` 는 그 URL, `copyright.txt` 는 `© {현재 연도} Seungman Choi`(하드코딩 금지). 스크린샷·메타데이터·스토어 폼은 `store-deploy` 스킬이 한다.
+
+## Hard Threshold
+
+| 기준 | 임계값 |
+|------|--------|
+| `/store-deploy` + 이 레포 fastlane lane 외의 배포 경로 | **0개** |
+| 스토어 제출 바이너리가 Development Build | **0개** |
+| 새 배포 인증서·전용 키체인 생성 / 비밀번호를 명령줄 인자로 전달 | **0개** |
+| 키스토어·`.p12`·`.p8` 커밋 | **0개** |
+| 앱 아이콘 누락 또는 알파 채널 포함 | **0개** |
+| 제출 전 version·build·bundle id 미확인 | **0개** |
+| 스토어 이름 ≠ 홈 화면 이름 | **0개** |

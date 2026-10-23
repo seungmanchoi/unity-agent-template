@@ -1,60 +1,67 @@
 # 시뮬레이터 런타임 테스트 (sim-use) (MANDATORY)
 
-> 이 문서는 CLAUDE.md 에서 옮긴 상세 규칙이다. **Hard Threshold 표는 CLAUDE.md 가 정본**이며, 여기 없는 통과 기준은 CLAUDE.md 를 따른다.
+> CLAUDE.md 에서 옮긴 상세 규칙이다. **Hard Threshold 표는 CLAUDE.md 가 정본**이며, 여기 없는 통과 기준은 CLAUDE.md 를 따른다.
 
-시뮬레이터/에뮬레이터에서 **앱을 실제로 실행해 화면·흐름을 검증**할 때는 [`sim-use`](https://github.com/lycorp-jp/sim-use) CLI를 사용한다. 접근성 트리를 토큰 효율적 아웃라인으로 바꿔 **좌표가 아닌 요소 별칭(`@N`)으로 observe → act → verify** 하는 도구다. `simctl` 좌표 탭·Playwright 등 다른 방법으로 시뮬레이터 UI를 직접 조작하지 않는다. 정적 코드 리뷰(qa-reviewer)와 별개인 **런타임 검증**용이다.
+게임을 시뮬레이터에서 실제로 돌려 화면·흐름을 확인할 때 UI 관찰·조작·검증은 [`sim-use`](https://github.com/lycorp-jp/sim-use) 만 쓴다. `simctl`·`adb` 좌표 탭, Playwright 로 화면을 조작하지 않는다. `simctl` 은 기기 부팅·설치·실행·스크린샷·로그에만 쓴다.
 
-## 부트스트랩 — 체크 후 없으면 설치 (런타임 테스트 시작 전 1회)
-
-시뮬레이터 런타임 테스트 직전 아래를 먼저 실행한다. 이미 설치돼 있으면 no-op:
+## 부트스트랩 (처음 한 번)
 
 ```bash
-if ! command -v sim-use >/dev/null 2>&1; then
-  brew tap lycorp-jp/tap && brew install lycorp-jp/tap/sim-use
-fi
+command -v sim-use >/dev/null || { brew tap lycorp-jp/tap && brew install lycorp-jp/tap/sim-use; }
 ```
 
-- 요구: macOS 14+ / 최신 Xcode Command Line Tools. CLT가 outdated면 `brew install`이 실패하므로(예: macOS 26에 구 CLT), 시스템 설정 → 소프트웨어 업데이트에서 CLT를 갱신한 뒤 재시도한다.
-- 설치 자체는 머신 로컬(Homebrew)이다. 스킬은 레포에 들어 있다(`.claude/skills/sim-use`, Codex 사본 `.agents/skills/sim-use`). 평소에는 `sim-use init` 을 하지 않는다.
-- CLI 를 올린 뒤 스킬도 맞추려면 `sim-use init --client claude --dest .claude/skills` 후 `npm run sync:codex` 를 실행해 두 사본을 같이 커밋한다.
+- 요구: macOS 14+, 최신 Xcode Command Line Tools.
+- 스킬은 레포에 있다(`.claude/skills/sim-use`, Codex 사본 `.agents/skills/sim-use`). CLI 를 올린 뒤 스킬도 맞추려면 `sim-use init --client claude --dest .claude/skills` 후 `npm run sync:codex`.
 
-## 앱 띄우기 — 개발 서버는 이 맥에서만
-
-Metro 는 켜 둔 동안 앱 JS 번들(코드·콘텐츠 전체)·이미지·설정을 인증 없이 내준다. 그래서 기본 명령은 127.0.0.1 에만 연다.
+## 빌드·설치·실행 (iOS)
 
 ```bash
-npm start            # 터미널 1: 127.0.0.1:8081 에 Metro
-npm run ios          # 터미널 2: 빌드·설치 후 127.0.0.1:8081 로 앱을 연다 (android 도 같다)
+fastlane ios build_unity_sim     # Unity IOS_SIMULATOR=1 (ARM64) → xcodebuild, 서명 없음
+APP=$(ls -d build-output/sim-derived/Build/Products/Debug-iphonesimulator/*.app)
+xcrun simctl boot "iPhone 16" 2>/dev/null; open -a Simulator
+xcrun simctl install booted "$APP"
+xcrun simctl launch --console-pty booted <bundle id>   # Unity Debug.Log 가 터미널로 나온다 ([Game] state -> …)
 ```
 
-- `npm run ios`·`android` 는 서버를 열지 않는다(`--no-bundler`). `expo run:*` 이 직접 여는 Metro 는 `--localhost` 를 받지 않아 모든 네트워크에 열리고, 127.0.0.1 서버가 떠 있어도 같은 포트에 하나 더 뜬다. 앱이 붙을 주소는 `REACT_NATIVE_PACKAGER_HOSTNAME=127.0.0.1` 로 맞춘다.
-- `start` 의 `--dns-result-order=ipv4first` 를 지우지 않는다. 없으면 Node 가 localhost 를 `::1` 로 풀어 Metro 가 IPv6 에만 열리는데, Expo 는 앱을 `127.0.0.1` 로 열어 접속이 안 된다.
-- 다른 프로젝트가 8081 을 쓰고 있으면 `npm start` 가 다른 포트를 묻는다. 그때 `npm run ios` 가 연 앱은 8081 로 붙으니, `npm start` 터미널에서 `i`(Android 는 `a`)로 다시 연다.
-- 실기기는 `npm run start:lan` 을 쓰고 끝나면 바로 끈다. 켜 둔 동안 같은 네트워크의 누구나 번들을 받을 수 있다.
+- 캡처·성능 측정용 자동 플레이: `xcrun simctl spawn booted defaults write <bundle id> autoplay -int 1` 후 재실행. 끝나면 `xcrun simctl spawn booted defaults delete <bundle id> autoplay`. iOS `defaults` 가 곧 PlayerPrefs 다.
+- 스크린샷: `xcrun simctl io booted screenshot <file>.png` (디자인 리뷰 캡처의 정본).
+- 시뮬레이터 없이 화면만 볼 때는 `npm run unity -- render`(`Build/render-check/*.png`). 시뮬레이터 캡처를 대신하지는 않는다.
 
-## observe → act → verify 루프
+## Android
 
 ```bash
-sim-use ui                 # 관찰: 화면 요소 아웃라인 출력(@별칭 부여)
-sim-use tap @9             # 조작: 별칭으로 탭
-sim-use type "hello"       # 텍스트 입력
-sim-use swipe @3 up        # 스와이프
-sim-use ui                 # 검증: 결과 재확인
+npm run unity -- apk                       # unity/Build/android/<slug>.apk
+adb install -r unity/Build/android/*.apk   # 설치만 adb. 조작은 sim-use
+sim-use android init --device <serial>     # 기기당 한 번 브리지 설치
+```
+
+## observe → act → verify
+
+```bash
+sim-use ui            # 관찰
+sim-use tap @9        # 조작 (별칭)
+sim-use ui            # 검증
 ```
 
 | 목적 | 명령 |
 |------|------|
-| 화면 관찰(요소 아웃라인) | `sim-use ui` |
-| 탭 / 스와이프 / 입력 / 붙여넣기 | `sim-use tap @N` · `swipe` · `type` · `paste` |
-| 버튼 · 제스처 · 키보드 상태 | `sim-use button` · `gesture` · `keyboard-state` |
-| 스크린샷 / 영상 | `sim-use screenshot` · `record-video` |
-| iOS 전용 키 입력 | `sim-use ios key` · `key-combo` · `key-sequence` |
-| Android 브리지(기기당 1회) | `sim-use android init --device <serial>` |
+| 화면 관찰 | `sim-use ui` · `sim-use screenshot` |
+| 탭·스와이프·입력 | `sim-use tap` · `swipe` · `type` |
+| 스크린샷·영상 | `sim-use screenshot` · `record-video` |
 
-- Android는 에뮬레이터/기기마다 `sim-use android init`으로 APK 브리지를 한 번 설치해야 한다.
-- fire-and-verify: 조작 후 반드시 `sim-use ui`로 상태를 재확인한 뒤 다음 액션을 결정한다(`ui` 없이 좌표를 가정하지 않는다).
+- **uGUI 는 접근성 트리에 요소를 거의 내보내지 않는다.** `sim-use ui` 가 빈약하면 `sim-use screenshot` 으로 위치를 확인하고 sim-use 의 좌표 지정(`sim-use tap -x <x> -y <y>`)으로 조작한다. 그래도 조작 도구는 sim-use 다.
+- 조작 뒤에는 반드시 관찰로 결과를 확인한 다음 다음 행동을 정한다. 게임 상태는 `--console-pty` 로그(`[Game] state -> Result`)로도 확인한다.
 
 ## 언제 쓰나
-- **app-inspector**의 런타임 UX/기능 검증 — 정적 검수를 넘어 실제 화면 동작·흐름 확인
-- `/iterate-app`의 Verify 단계 — 구현한 슬라이스를 시뮬레이터에서 직접 조작해 확인
-- 버그 재현 / 회귀 확인
+
+- **app-inspector** 의 런타임 UX·기능 검수, 디자인 리뷰 캡처(`design-review` 스킬)
+- `/iterate-app` Verify 단계, 버그 재현·회귀 확인
+
+## Hard Threshold
+
+| 기준 | 임계값 |
+|------|--------|
+| sim-use 외 도구로 시뮬레이터 UI 조작 (simctl/adb 좌표 탭, Playwright) | **0개** |
+| 시뮬레이터 확인 없이 화면 변경 완료 보고 | **0개** |
+| 관찰 없이 연속 조작(fire-and-forget) | **0개** |
+| autoplay 플래그를 남긴 채 사람 플레이 검증 | **0개** |
