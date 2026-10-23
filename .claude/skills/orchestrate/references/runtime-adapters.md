@@ -13,10 +13,11 @@ The agents and skills are written once (`.claude/`) and copied to Codex by `npm 
 | `mcp__playwright__browser_*` | Playwright MCP server | Any configured browser tool (Playwright MCP if added to `~/.codex/config.toml`). With none, hand the console steps to the user and continue |
 | `mcp__codegraph__*` | CodeGraph MCP | Same server if configured, else `codegraph` CLI, else grep |
 | `TodoWrite` / task list | Built-in | Codex plan tool (`update_plan`) |
-| Stop hook → `npm run verify` | `.claude/settings.json` `hooks.Stop` | `.codex/hooks.json` (trust it once in `/hooks`) |
+| Stop hook → `npm run verify` (check:harness + `dotnet test unity/DomainTests~`) | `.claude/settings.json` `hooks.Stop` | `.codex/hooks.json` (trust it once in `/hooks`) |
 
 ## Rules that do not change between runtimes
 
-- Hard Thresholds (CLAUDE.md) and `npm run verify` are the pass/fail gate in both runtimes. A hook that is not installed or not trusted does not lift the gate — run `npm run verify` yourself before reporting done.
+- Hard Thresholds (CLAUDE.md) and `npm run verify` (static Unity harness checks + engine-free Domain tests) are the pass/fail gate in both runtimes. A hook that is not installed or not trusted does not lift the gate — run `npm run verify` yourself before reporting done.
 - Inter-agent artifacts go through files in `_workspace/`, never through chat memory, so either runtime can resume the other's work.
-- Simulator checks use `sim-use` in both runtimes.
+- Simulator checks use `sim-use` in both runtimes; Unity runs only in batchmode through `npm run unity -- <cmd>` (never the Editor GUI).
+- Design reviews go to Codex in both runtimes: Claude Code calls `codex:codex-rescue` with `--wait` on the first line; Codex does the review itself.

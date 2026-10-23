@@ -1,46 +1,54 @@
-# Phase 7 Step 7.0: 배포 전 재검증 게이트 — 상세 표
+# Phase 7 Step 7.0: 배포 전 재검증 게이트 (Pre-Deploy Gate)
 
-> orchestrate SKILL.md 에서 옮긴 상세 절차다. 해당 Phase 에 들어갈 때 이 문서를 Read 하고 그대로 따른다.
+> orchestrate Phase 7 에 들어갈 때 Read 하고 그대로 따른다.
 
-#### Step 7.0: 배포 전 재검증 게이트 (Pre-Deploy Gate)
+게시된 빌드에서만 드러나거나 출시 뒤에는 코드·콘솔로만 고칠 수 있는 것들을 빌드 직전에 다시 확인한다. 시뮬레이터에서 검증할 수 없는 항목은 코드·설정·산출물 상태로 판정한다. **하나라도 미통과면 빌드·제출을 보류한다.** 사용자 승인으로도 Hard Threshold 위반은 넘기지 않는다.
 
-**게시된 빌드에서만 동작하거나 출시 후 코드/콘솔로만 고칠 수 있는 것들**은, 빌드 직전에 "제대로·일관되게 됐는지"를 마지막으로 재확인한다. 시뮬레이터·dev·TestFlight에선 검증되지 않는 항목은 **코드·설정 상태로만 판정**한다. 하나라도 미통과면 Build/Submit 보류.
+## (a) 코드·검증
 
-**(a) 런타임 트리거 배선** — 게시 후 코드로만 수정 가능
+| 확인 | 통과 기준 | 미통과 시 |
+|------|----------|----------|
+| verify | 배포할 커밋에서 `npm run verify` green (check:harness + Domain dotnet test) | 배포 보류, 해당 에이전트로 |
+| 생성기 멱등 | `npm run unity -- generate` 를 두 번 돌린 뒤 `git status` 가 깨끗 | 생성기 수정 (presentation-developer) |
+| EditMode 테스트 | `npm run unity -- test` 전부 통과 | module-builder |
+| HIGH 이슈 | `_workspace/qa/unresolved.md` 에 HIGH 0건 | 보류 |
+| 런타임 증거 | app-inspector 가 시뮬레이터에서 첫 실행 → 한 판 → 결과 → 재시작 흐름을 `sim-use` 로 확인하고 기기·커밋·캡처를 `_workspace/qa/runtime/` 에 남김. 못 띄웠으면 `BLOCKED` 이고 PASS 아님 | 실행 가능한 환경에서 재검증 |
+| 디자인 리뷰 | 최신 `docs/specs/<feature>/design-review-N.md` 가 Codex **GO**, 미해결 P0 없음 | `/design-review` 루프 |
 
-| 확인 항목 | 통과 기준 | 미통과 시 |
-|----------|----------|----------|
-| **스토어 리뷰 트리거** | `spec.md`의 `ux.store_review=true`이면, PRD Review Triggers에 매핑된 화면의 **긍정적 액션 성공 콜백(UI idle)**에 `maybeRequest(REVIEW_TRIGGERS.X)`가 **최소 1곳 이상** 실제 배선됨. (인앱 리뷰는 스토어 콘솔 사전 설정 불필요) | 한 곳도 없으면 평점 수집이 0 → `ui-developer`로 환원, 가치-순간 결정 후 배선 |
-| 광고 동의/초기화 | `monetization.model`에 광고 포함 시 루트에서 `initializeAdsWithConsent()` 호출(렌더 비차단) + 모든 광고 로드가 `useAdsReady()` 경유 + AdMob Console GDPR/IDFA 메시지 **Published** | `api-integrator`로 환원 |
-| Analytics KPI 배선 | 북극성/4축 커스텀 이벤트가 화면에 배선(`screen_view`는 루트 `_layout.tsx`가 자동 기록) | `api-integrator`/`ui-developer`로 환원 |
-| **빌드 환경 (APP_ENV)** | 스토어 제출 바이너리의 `extra.appEnv`가 없거나 `production` (EAS: 프로필 `APP_ENV=production` / 로컬 fastlane: 미설정 → release 번들이 production으로 판정). `docs/rules/build-deploy.md` "빌드 환경 (APP_ENV)" 검증 명령 | `development`/`preview`면 테스트 광고로 출시됨 → 재빌드 |
+## (b) 런타임 배선 — 출시 뒤에는 코드로만 고친다
 
-**(b) 스토어·콘솔·일관성·시크릿** — 출시 후 수정이 번거롭거나 리젝/정책 위반을 유발
+| 확인 | 통과 기준 | 미통과 시 |
+|------|----------|----------|
+| 평점 트리거 | `ux.store_review=true` 면 승리·기록 갱신 같은 긍정 순간에 정책 엔진을 거친 요청이 최소 1곳. 패배·에러 직후, 첫 판, 자체 사전 팝업 없음 | presentation-developer / platform-integrator |
+| 광고 동의 | 광고 앱이면 `Ads.InitializeWithConsent()`(UMP → ATT → RequestConfiguration → Initialize) 뒤에만 로드, 리워드는 보상 콜백에서만 지급, 전면 광고는 빈도 게이트 경유. AdMob 콘솔 GDPR·IDFA 메시지 Published | platform-integrator |
+| 운영 광고 ID | 앱이 부르는 광고 단위마다 운영 ID 가 placeholder·테스트 ID 가 아님. 테스트 기기 ID 는 Development 빌드에서만 | 실제 단위 생성(`store-admob`) 후 재빌드 |
+| ATT 문구 | `NSUserTrackingUsageDescription` 이 무엇(광고 식별자)·왜(관련성·설치 측정)·구체 예시·거부 시 결과를 담고 언어별로 있음. "deliver personalized ads to you" 류 상투 문구 금지 | 다시 쓴다 (`docs/rules/ads.md`) |
+| KPI 이벤트 | 북극성 + 4축 이벤트가 코드 경로에 배선, 수집은 운영 빌드에서만 | platform-integrator |
 
-| 확인 항목 | 통과 기준 | 미통과 시 |
-|----------|----------|----------|
-| **앱 이름 4곳 일치** | `app.config.ts` `name` / `withLocalizedAppName` / iOS `name.txt` / Android `title.txt` 가 **언어별로 모두 동일**(30자 이내) | 불일치 → 4곳 동기화 (`prebuild --clean` 재빌드 필요) |
-| **권한 ↔ 사용 설명 일치** | spec `permissions.*`에서 켠 권한마다 Info.plist 사용 설명 문구 존재 + **안 쓰는 권한은 미선언** | 누락/과선언 → 스토어 리젝 사유, `api-integrator`로 환원 |
-| **데이터 안전 라벨 ↔ SDK** | 통합된 데이터 수집 SDK(Analytics/AdMob/Crashlytics)와 Play 데이터 안전 / Apple 개인정보 라벨이 **일치** | 불일치 → 정책 위반/리젝, store-forms로 보정 |
-| **IAP/구독 상품 등록** (조건부) | `monetization.model`에 IAP/구독 포함 시 ASC/Play 콘솔에 상품 생성·승인됨 | 미등록 → 페이월 무동작(수익 0), 콘솔 등록 후 재확인 |
-| **검증 green** | 배포할 커밋에서 `npm run verify` 통과 + Hard Threshold 위반 0 (사용자 승인으로 우회 불가) | 실패 → 배포 보류, 해당 에이전트로 환원 |
-| **미해결 HIGH QA 이슈** | `_workspace/qa/unresolved.md`에 HIGH 미해결 이슈 **0건** (Phase 6 과 같다 — 승인으로 넘기지 않는다) | HIGH 잔존 → 배포 보류 |
-| **런타임 검증 증거** | Phase 5b 가 시뮬레이터에서 핵심 흐름(happy path·뒤로가기·키보드·에러/빈 상태)을 `sim-use` 로 확인하고 플랫폼·기기·커밋·스크린샷을 `_workspace/qa/runtime/` 에 남김. 시뮬레이터를 못 띄웠으면 `BLOCKED` 로 기록되며 PASS 가 아니다 | `BLOCKED`/누락 → 사용자에게 알리고 실행 가능한 환경에서 재검증 |
-| **app-ads.txt** (조건부) | 광고 사용 시 app-ads.txt 게시 + 스토어 리스팅에 도메인 연결 (store-admob Step 7) | 미게시 → 무효 트래픽 판정·수익 차단 |
-| **Firebase 설정 주입** | `GoogleService-Info.plist`/`google-services.json` 평문 커밋 0. `./firebase/` 두 파일 존재 (로컬 빌드, `.easignore` 가 올리는 클라우드 빌드 모두). `firebase/` 를 아카이브에서 뺀 클라우드 빌드만 file 환경변수 `GOOGLE_SERVICE_INFO_PLIST`/`GOOGLE_SERVICES_JSON` 등록(`eas env:list`) | 누락 → prebuild 실패/런타임 Firebase 실패, 설정 후 재빌드 |
+## (c) 산출물·스토어
 
-> **왜 배포 단계인가**: (a)는 "어느 화면의 어느 순간에 넣을지"가 UX 품질을 좌우하고(평점은 잘못 띄우면 ★1 폭격), (b)는 여러 곳에 흩어져 동기화가 깨지거나 콘솔/스토어 설정과 어긋나기 쉽다. 둘 다 **전체가 완성된 배포 직전**에 판단·확인이 가장 정확하고, 게시 후엔 즉시 못 고치므로 여기가 마지막 안전망이다. 모두 통과해야 Build/Submit 진행.
+| 확인 | 통과 기준 | 미통과 시 |
+|------|----------|----------|
+| IPA 식별자 | `unzip -p build-output/<slug>.ipa 'Payload/*.app/Info.plist' \| plutil -p -` 에서 `CFBundleIdentifier` = `AppInfo.BundleId`, `CFBundleShortVersionString` = `AppInfo.Version`, `CFBundleVersion` = TestFlight 최신 +1 | 재빌드 |
+| AAB 식별자 | `bundletool dump manifest --bundle <aab>` 의 package·versionCode·versionName | 재빌드 |
+| 운영 빌드 | Development Build 아님(`BuildOptions.Development` 없음, `Debug.isDebugBuild` false), autoplay 기본값 꺼짐 | 재빌드 |
+| 아이콘 | 1024 알파 없는 PNG 가 들어감 (ASC 처리 오류 메일 없음) | `Content/AppIcon.png` 교체 |
+| 앱 이름 일치 | `AppInfo.Name`, 언어별 홈 화면 이름, iOS `name.txt`, Android `title.txt` 가 언어별로 같음(30자 이하) | 동기화 후 재빌드 |
+| 개인정보·지원 URL | `https://seungmanchoi.github.io/{slug}/privacy.html` 이 열리고 4개 언어 탭 | GitHub Pages 커밋·푸시 |
+| 데이터 안전 라벨 | 들어간 SDK(GMA, Firebase Analytics·Crashlytics)와 Apple 개인정보 라벨·Play 데이터 안전이 일치 | `store-forms` 로 보정 |
+| 권한 | 쓰는 권한만 선언(진동은 Android VIBRATE 만). 안 쓰는 권한 설명 문구 없음 | 후처리·manifest 정리 |
+| app-ads.txt | 광고 앱이면 게시 + 스토어 리스팅 도메인 연결 | `store-admob` |
+| IAP 상품 | IAP 앱이면 ASC·Play 에 상품 생성·승인 | 콘솔 등록 |
+| 시크릿 | `GoogleService-Info.plist`·`google-services.json`·키스토어·`.p12`·`.p8` 커밋 0건 (check-harness 가 본다) | 커밋에서 제거 후 키 교체 검토 |
+
+## 진행 순서 (모두 통과한 뒤)
 
 ```
-Tasks (/store-deploy):
-0. (광고 앱) AdMob 앱·광고 단위: store-admob. --ad-types 에 spec monetization.ad_formats 를 넘긴다
-   (앱 코드가 부르는 형식과 같아야 한다. 템플릿 기본은 app_open 포함)
-1. 프로덕션 빌드 — 로컬이 기본 (eas build --local, EAS 프로젝트가 없는 앱은 fastlane).
-   클라우드 EAS Build 는 사용자가 요청하거나 로컬 빌드가 안 될 때만
-2. 스토어 메타데이터 생성
-3. 스크린샷 생성
-4. App Store / Google Play 제출 — 로컬 산출물은 eas submit --path <파일>,
-   EAS 프로젝트가 없는 앱은 그 앱의 fastlane 업로드 lane
+0. (광고 앱) store-admob — 앱·광고 단위. --ad-types 는 spec monetization.ad_formats 와 같게
+1. iOS:     fastlane ios build_unity → fastlane ios upload → fastlane ios tf_status
+   Android: ANDROID_KEYSTORE=… fastlane android build_unity build:N → fastlane android internal
+2. store-metadata → store-screenshots → store-forms
+3. 심사 제출은 사용자 확인 뒤
 ```
 
-상세 절차: store-deploy 플러그인의 `store-deploy` 스킬 (Claude: `.claude/settings.json` 이 `seungmanchoi/store-deploy-plugin` 을 등록, Codex: `references/runtime-adapters.md` 의 설치 명령. 유지관리자 로컬 원본: `~/works/store-deploy-plugin/skills/store-deploy/SKILL.md`)
+store-deploy 플러그인: Claude 는 `.claude/settings.json` 이 등록, Codex 는 `references/runtime-adapters.md` 의 설치 명령.

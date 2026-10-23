@@ -54,15 +54,17 @@
 ### 3. Develop — 한 슬라이스 개발 (위임)
 | 변경 유형 | 위임 |
 |-----------|------|
-| 새 모듈/엔티티/타입 | feature-builder |
-| API·상태·Analytics·광고·평점 인프라 | api-integrator |
-| 화면·컴포넌트·배선 | ui-developer |
+| 규칙·시뮬레이션·진행 (Domain + 테스트) | module-builder |
+| SDK·네이티브 브리지·Analytics·광고·평점·저장 | platform-integrator |
+| 화면 상태·uGUI·입력·FX·오디오·생성기 배선 | presentation-developer |
+| 시각 변경 | 구현 뒤 `/design-review` (Codex) |
 각 에이전트는 spec.md 분기 규칙(Pre-Work Contract)을 따른다. 완료 task는 `docs/specs/`에서 체크.
 
 ### 4. Verify — 검증 게이트
-- **qa-reviewer**: CLAUDE.md Hard Thresholds(정본) — typecheck/lint 0, FSD, 보안(SecureStore), Analytics/평점/광고 안티패턴 (변경 슬라이스 + 의존 그래프).
-- **app-inspector**: 변경 화면 기능/UX/접근성 + **회귀 검사**.
-- **추가 게이트**: KPI 회귀 없음(기존 이벤트/측정 유지) · 번들 회귀 없음(불필요 의존성 금지).
+- **qa-reviewer**: CLAUDE.md Hard Thresholds(정본) — `npm run verify` green, `npm run unity -- generate` 2회 후 git 깨끗, `npm run unity -- test`, 레이어·결정성·SDK 경계·시크릿 (변경 슬라이스 + 의존 어셈블리).
+- **app-inspector**: 시뮬레이터에서 변경된 흐름 + **회귀 검사**(첫 실행 → 한 판 → 결과 → 재시작).
+- **design-review**: 시각 변경이 있으면 Codex 4축 리뷰 GO.
+- **추가 게이트**: KPI 회귀 없음(기존 이벤트 유지) · 앱 크기 회귀 없음(불필요 패키지·에셋 금지) · 프레임 회귀 없음(같은 autoplay 판 기준).
 - FAIL → 구현 에이전트 수정 (최대 3회). 3회 후 미해결 → 백로그 환원.
 
 ### 5. Reflect — 회고 및 다음 추천

@@ -1,6 +1,6 @@
 # Google Play 프로덕션 액세스 신청 (Production Access Application)
 
-Google Play **개인(personal) 개발자 계정**으로 만든 신규 앱을 프로덕션(공개) 트랙에 올리려면, 먼저 **"프로덕션 액세스 신청"** 양식을 제출하고 Google 심사를 통과해야 한다. 이 문서는 그 신청 양식의 전체 질문과 **답변 작성 원칙**을 정의한다. Phase 7 배포(특히 Android, 개인 계정)에서 `api-integrator`의 "Play Console 프로덕션 액세스 신청 자동화" 능력이 이 문서를 정본으로 참고한다.
+Google Play **개인(personal) 개발자 계정**으로 만든 신규 앱을 프로덕션(공개) 트랙에 올리려면, 먼저 **"프로덕션 액세스 신청"** 양식을 제출하고 Google 심사를 통과해야 한다. 이 문서는 그 신청 양식의 전체 질문과 **답변 작성 원칙**을 정의한다. Phase 7 배포(특히 Android, 개인 계정)에서 `platform-integrator` 가 이 문서를 정본으로 참고한다.
 
 > 관련: `deploy-build-troubleshooting.md`(빌드/제출), store-deploy 플러그인의 `store-forms` 스킬(스토어 폼 일반).
 
@@ -14,7 +14,7 @@ Google Play **개인(personal) 개발자 계정**으로 만든 신규 앱을 프
 2. **12명 이상**의 테스터가 비공개 테스트 참여 opt-in
 3. **12명 이상** 테스터로 **14일 이상** 비공개 테스트 실행
 
-세 조건이 ✅✅✅ 되기 전엔 `eas.json`의 track을 production으로 바꿔도 공개 출시 불가. 법인(조직) 계정은 이 게이트가 없을 수 있다.
+세 조건이 ✅✅✅ 되기 전엔 업로드 트랙을 production 으로 바꿔도 공개 출시 불가. 법인(조직) 계정은 이 게이트가 없을 수 있다.
 
 - **신청 위치**: 앱 대시보드 → "프로덕션" 카드 → **"프로덕션 신청"** 버튼 → 3단계 다이얼로그
 - **심사**: 제출 후 Google 검토. **보통 7일 이내**(더 걸릴 수 있음). 결과는 **계정 소유자 이메일**로 통보
@@ -98,7 +98,7 @@ Google Play **개인(personal) 개발자 계정**으로 만든 신규 앱을 프
 
 프로덕션 액세스가 승인되면:
 - **권장**: 콘솔에서 비공개 테스트(alpha) 최신 버전을 **"버전 승급" → 프로덕션**. 재빌드 없이 이미 테스트된 동일 AAB가 출시됨.
-- 또는 `eas.json`의 `submit.production.android.track`을 `"production"`으로 바꾸고 새 빌드를 제출.
+- 또는 새 AAB 를 `upload_to_play_store(track: "production")` lane 으로 올린다.
 - 출시 전 프로덕션 트랙 **국가/지역**과 **출시 노트**(Android changelog 언어별 500자 제한) 확인.
 
-> `eas.json` android `releaseStatus: "completed"`가 아니면 제출이 draft로만 올라가 테스터/사용자에게 안 나간다. 템플릿 `eas.json` 은 `"completed"` 다. 이미 draft 로 올라갔으면 Play Console 에서 그 릴리스를 직접 출시한다 (제출 절차: store-submit).
+> 템플릿 `fastlane android internal` lane 은 `release_status: "draft"` 로 올린다. draft 릴리스는 테스터·사용자에게 나가지 않으니 Play Console 에서 직접 출시하거나 `release_status: "completed"` 로 올린다.
