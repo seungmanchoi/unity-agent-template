@@ -1,5 +1,5 @@
 {
-  "$comment": "이 레포의 하네스 설정. ponytail = lazy senior dev 코딩 원칙 (CLAUDE.md '코딩 원칙 (ponytail)'). store-deploy = 빌드·제출·스토어 폼 스킬 (/store-deploy). Stop hook = 코드가 바뀐 턴에 npm run verify 를 돌려 Hard Threshold 실패를 에이전트에게 되돌린다 (Codex 는 .codex/hooks.json 이 같은 스크립트를 부른다).",
+  "$comment": "이 레포의 하네스 설정. ponytail = lazy senior dev 코딩 원칙 (CLAUDE.md '코딩 원칙'). store-deploy = 빌드·제출·스토어 폼 스킬 (/store-deploy, Unity 는 fastlane build_unity 어댑터). Stop hook = 코드가 바뀐 턴에 npm run verify(check:harness + Domain dotnet test)를 돌려 Hard Threshold 실패를 에이전트에게 되돌린다 (Codex 는 .codex/hooks.json 이 같은 스크립트를 부른다).",
   "extraKnownMarketplaces": {
     "ponytail": {
       "source": {

@@ -1,17 +1,18 @@
 # AGENTS.md
 
-Codex entry point for this repository. **The single source of truth is `CLAUDE.md` — read it in full before starting any task.** It holds every Hard Threshold table plus a short summary per domain; the detailed rules live in `docs/rules/*.md` (secure storage, analytics, store review, ads, build/deploy, runtime testing, tooling) — read the one for the area you touch. This file repeats the pass/fail rules and the flows that must never be skipped.
+Codex entry point for this repository. **The single source of truth is `CLAUDE.md` — read it in full before starting any task.** It holds every Hard Threshold table plus a short summary per domain; the detailed rules live in `docs/rules/*.md` (unity-workflow, ads, analytics, store review, secure storage, build/deploy, runtime testing, tooling) — read the one for the area you touch. This file repeats the pass/fail rules and the flows that must never be skipped.
 
-If `~/works/AGENTS.md` exists (the maintainer's personal-app rules: store deploy, ads, bundle ID, signing, local-build default), read it before any task. It sits above this repo's git root, so Codex does not load it automatically.
+If `~/works/AGENTS.md` exists (the maintainer's personal-app rules: store deploy, ads, bundle ID, signing), read it before any task. It sits above this repo's git root, so Codex does not load it automatically.
 
 ## Project
 
-React Native + Expo template with Feature-Sliced Design (FSD) and an AI agent harness for the full app lifecycle (idea → plan → spec → design → build → QA → deploy → iterate).
+Unity mobile game template with an AI agent harness for the full lifecycle (idea → plan → spec → design → build → QA → deploy → iterate).
 
-- React Native 0.86 + Expo SDK 57 (React 19.2, New Architecture, Hermes) · TypeScript 6 strict
-- Expo Router 57 — import navigation from `expo-router`, never `@react-navigation/*`
-- Zustand (client state) · TanStack Query (server state) · NativeWind 4 (Tailwind 3.4) · React Hook Form + Zod · Axios with token refresh
-- AdMob `react-native-google-mobile-ads` **17.0.0 pinned** (UMP + ATT) · RN Firebase 26 (Analytics + Crashlytics, modular API) · expo-secure-store · expo-store-review
+- Unity **6000.3.26f1** (Personal) · Input System **1.20.0** (Active Input Handling = Input System) · Test Framework **1.6.0** · uGUI **2.0.0** — all pinned
+- Code-built uGUI (CanvasScaler 1080×2340 width-matched, safe area, Noto Sans KR) · IL2CPP ARM64 · portrait
+- Domain tests through `dotnet test` (net10.0, C# 9, NUnit) without a Unity license; Unity EditMode tests through `-runTests`
+- Optional SDKs, added only in `Platform/`: Google Mobile Ads Unity 11.5.0 (UMP) · Firebase Unity 13.17.0 (Analytics + Crashlytics)
+- Deploy: Unity batchmode → Xcode/Gradle → fastlane (`build_unity` → `upload`) through the store-deploy plugin
 
 ## Harness in Codex
 
@@ -24,85 +25,51 @@ Edit only the `.claude/` sources, then run `npm run sync:codex` (`npm run verify
 
 | Task | Agent |
 | --- | --- |
-| New app from this template (slug, bundle id, names) | `init-app` skill — run first while `app.config.ts` still has `SLUG = 'my-app'` |
+| New game from this template (slug, name, bundle id, namespace) | `init-app` skill — run first while `AppInfo.cs` still has `Slug = "my-game"` |
 | Idea / market research | `idea-researcher` |
 | PRD / KPIs | `product-planner` |
 | Specs / task breakdown | `spec-planner` |
-| Design system / theme | `design-architect` |
-| FSD module scaffolding | `feature-builder` |
-| API, state, Analytics, Secure Storage, Store Review, AdMob | `api-integrator` |
-| Screens / UI | `ui-developer` |
+| Visual direction / theme / design review | `design-architect` (+ `design-review` skill) |
+| Domain modules (pure C# rules, sims, tests) | `module-builder` |
+| Screens, input, FX, audio, scene generator | `presentation-developer` |
+| Ads, analytics, storage, store review, haptics, native bridges | `platform-integrator` |
 | Code quality gate | `qa-reviewer` |
-| Functional / UX inspection | `app-inspector` |
+| Simulator functional / UX inspection | `app-inspector` |
 | Post-launch iteration loop | `loop-engineer` |
 
-Full-app builds follow the `orchestrate` skill's phases; post-launch work uses `iterate-app` (Codex has no `/loop` — ask for N cycles). The agents and skills name Claude Code tools (`Agent`, `AskUserQuestion`, `SendMessage`, `/skill`, `mcp__*`); read them through `.agents/skills/orchestrate/references/runtime-adapters.md`. Inter-agent artifacts live in `_workspace/`; `spec.md`, `plan/` and `iterate/` are committed, the rest is scratch.
+Full builds follow the `orchestrate` skill's phases; post-launch work uses `iterate-app` (Codex has no `/loop` — ask for N cycles). Read Claude tool names in the docs through `.agents/skills/orchestrate/references/runtime-adapters.md`. Inter-agent artifacts live in `_workspace/`; `spec.md`, `plan/` and `iterate/` are committed, the rest is scratch.
 
 **Setup once per machine**
-- Trust this repo's hooks in `/hooks`: `.codex/hooks.json` runs `scripts/verify-hook.mjs` at Stop, which runs `npm run verify` when files changed and hands failures back to you. Untrusted or not, run `npm run verify` yourself before saying a task is done.
+- Trust this repo's hooks in `/hooks`: `.codex/hooks.json` runs `scripts/verify-hook.mjs` at Stop. Trusted or not, run `npm run verify` yourself before saying a task is done.
 - Store deploy skills: `codex plugin marketplace add seungmanchoi/store-deploy-plugin`, then `codex plugin add store-deploy@store-deploy-marketplace`.
+- .NET SDK 10 for the Domain tests (`brew install dotnet`), Unity 6000.3.26f1 through Unity Hub with a Personal license for batchmode.
 
 ## Hard Thresholds (any violation = FAIL)
 
-**Quality**
-- `npm run verify` green (typecheck · lint · test · `check:harness`) — ESLint blocks wrapper-bypass imports and UTC date keys; `check:harness` covers NativeWind, SafeArea, Firebase config, pins and stale Codex copies
-- `npm run typecheck` 0 errors · `npm run lint` 0 errors · `any` 0 · FSD layer violations 0 (`app → widgets → features → entities → shared`)
-- Every screen wrapped in `SafeAreaView` (`react-native-safe-area-context`) · barrel `index.ts` per slice · NativeWind setup intact (babel preset + `nativewind/babel`, `withNativeWind` metro, `global.css`, `nativewind-env.d.ts`)
-- Only Tailwind classes defined in `tailwind.config.js` (undefined classes are silently ignored). Brand color = `primary`; body text = `text-text-*`
-- No `toISOString().split('T')[0]` for "today" — use `dayjs().format('YYYY-MM-DD')`
-- React Compiler lint rules are on: no ref reads/writes or `Date.now()` during render
+**Quality** — `npm run verify` green (check:harness + Domain `dotnet test`) and no `error CS` in `npm run unity -- generate`
+- Assembly direction `Domain ← Platform ← Presentation ← Editor`, `Tests.EditMode → Domain` only
+- Domain: `noEngineReferences: true`, no `UnityEngine`/`UnityEditor`, no clock reads, no `System.Random` (seeded `Rng`), fixed-step and deterministic
+- SDK `using`s and `[DllImport]` only in `Platform/`
+- Every code-built canvas applies `Screen.safeArea`; touch targets ≥ 132 reference px
+- Pins: editor 6000.3.26f1, Input System 1.20.0, Test Framework 1.6.0, uGUI 2.0.0, exact versions only in `Packages/manifest.json`
+- No hand-edited Unity YAML or `.meta` GUIDs; `.meta` committed for every asset; `Generated/`, `Library/`, `Build/` never committed; running `generate` twice leaves git clean
+- Local day keys from local time (`DateTime.Now.ToString("yyyy-MM-dd")`), never from UTC
 
-**Secure storage**
-- Tokens/secrets only in SecureStore via `tokenManager` (`keychainAccessible: WHEN_UNLOCKED_THIS_DEVICE_ONLY`) — never AsyncStorage/MMKV/persist/`extra`/`.env`, never in logs or analytics
+**Never use the Editor GUI** — scenes/prefabs come from `Editor/Build.cs` `Generate()` in batchmode (`npm run unity -- generate`). `render` needs a GPU (no `-nographics`); `test` runs `-runTests` without `-quit`.
 
-**Store review**
-- Only `useStoreReview().maybeRequest(REVIEW_TRIGGERS.X)` (policy engine `canRequestReview`, `uiIsIdle` gate) — no direct `expo-store-review`, no custom pre-prompt, no branching on the return value, never from error handlers
+**Design** — visual changes need a Codex design review on real simulator captures (Design Quality · Originality · Craft · Functionality, P0/P1/P2) and a GO before done.
 
-**Ads (AdMob)**
-- Only `initializeAdsWithConsent()` (UMP → ATT → `setRequestConfiguration` → `initialize`), called non-blocking from the root layout. No direct `AdsConsent.*` / `mobileAds()` / `expo-tracking-transparency` calls
-- Every ad load (`createForAdRequest`, `load()`, `<BannerAd>`) waits for `useAdsReady()` / `isAdsReady()` (consent + SDK init)
-- ATT purpose string: says what (advertising identifier), why (relevance + install measurement), a concrete example, and the outcome of declining. Rewrite it per app in `app.config.ts` **and** the `plugins/withLocalizedAttDescription.js` locale table. "This identifier will be used to deliver personalized ads to you." is an automatic rejection
-- `.lproj/InfoPlist.strings` count = Xcode-registered count · AdMob GDPR/IDFA messages published · privacy-options entry point (`showAdsConsentForm()`) when `privacyOptionsRequired` — subscribe with `onAdConsentResult()`, a foreground consent retry can flip it
-- One banner per screen, never hidden/covered · full-screen `show()` only through the `canShow*` gates (shared cooldown, daily caps) · rewards only in `EARNED_REWARD` · load retries use backoff · real-ID internal builds only on registered test devices (`TEST_DEVICE_IDS`)
+**Secure storage** — `PlayerPrefs` is plaintext: settings, flags and best scores only. Tokens, secrets and receipts go through the Platform Keychain/Keystore bridge; never in logs or analytics.
 
-**Analytics**
-- KPIs (north star + acquisition/activation/retention/monetization) defined in the PRD
-- Only the `@shared/lib/analytics` wrapper — never `@react-native-firebase/*` directly; RN Firebase v26 removed the namespaced `analytics()` API
-- Event names from `EAnalyticsEvent` only · no PII in params · `GoogleService-Info.plist` / `google-services.json` never committed
-- Collection only when `IS_PROD`: `firebase.json` keeps native Analytics collection off (`analytics_auto_collection_enabled: false`, never remove it) and `initAnalytics()` (module scope of `app/_layout.tsx`, not an effect — child effects run first) turns it on in production. Do not add `crashlytics_auto_collection_enabled: false` — production first-launch crashes before JS would never upload
+**Store review** — only through the Domain `ReviewPolicy` + Platform bridge; no custom pre-prompt, no score-begging, no branching on the result, never from error handlers.
 
-**Build environment**
-- Store binaries must have `extra.appEnv` absent or `production` (see below)
+**Ads** — only `Ads.InitializeWithConsent()` (UMP → ATT → `SetRequestConfiguration` → `MobileAds.Initialize`); every load waits for `Ads.IsReady`. Rewrite the ATT purpose string per game (what, why, example, outcome of declining) — "This identifier will be used to deliver personalized ads to you." is an automatic rejection. One banner per screen, interstitials only through the shared cooldown / daily cap gate, rewards only in the earned callback, load retries with backoff, real-ID internal builds only on registered test devices.
+
+**Analytics** — KPIs in the PRD; only the Platform `Analytics` wrapper; event-name constants, snake_case, no PII; collection only in production builds; `GoogleService-Info.plist` / `google-services.json` never committed.
 
 ## Flows That Must Not Be Skipped
 
-- **APP_ENV**: `IS_DEV`/`IS_PROD` come from `APP_ENV` (`development` | `preview` | `production`) set by the EAS profile; the dev npm scripts pin `APP_ENV=development`. Unset means dev bundle → development, release bundle → production (local fastlane builds, which must also export `API_URL` and other profile env). Never put `APP_ENV` in `.env`, never use `NODE_ENV` for app environments.
-- **Firebase config**: files live in `./firebase/` (gitignored). Local builds read them directly, and cloud builds get them too because `.easignore` uploads `firebase/`. Only if `firebase/` is excluded from the archive do cloud builds need file env vars named exactly `GOOGLE_SERVICE_INFO_PLIST` / `GOOGLE_SERVICES_JSON` (`eas env:create --type file --visibility secret`; `eas secret:*` is deprecated).
-- **iOS linking**: `expo-build-properties` `ios.useFrameworks: 'dynamic'` (RNFB 26 uses SPM) and `ios.enableSceneSupport: true`. Never `'static'` alone. No Podfile-patching plugins, no `jsEngine: 'jsc'`.
-- **Pins**: `react-native-google-mobile-ads` stays at 17.0.0 until invertase/react-native-google-mobile-ads#903 is fixed. `patches/@react-native-firebase+crashlytics+26.4.0.patch` must stay until RN Firebase is upgraded past 26.4.0.
-- **Native changes**: `npx expo prebuild` cleans `ios/`/`android/` by default on SDK 57 — change native code through config plugins only.
-- **Deployment**: use the `store-deploy` plugin skills (install above; maintainer's local source `~/works/store-deploy-plugin/skills/`) (see `CLAUDE.md` "EAS Build & Deploy Rules"). Production builds are local by default: `eas build --local` (apps without an EAS project use their fastlane lane), then submit that artifact with `eas submit --path <file>`. Use cloud EAS Build only when the user asks or the local build fails.
-- **Runtime testing**: drive simulators/emulators with `sim-use` (observe → act → verify with `sim-use ui`); never coordinate-tap with `simctl`/`adb`.
-- **Coding principle (ponytail)**: does it need to exist? → reuse what is here → stdlib → platform → installed deps → one line → minimum code. Fix root causes, not symptoms.
-- **CodeGraph (optional)**: use `codegraph_*` tools for structural questions when `.codegraph/` exists.
-
-## Commands
-
-```bash
-npm install          # also applies patches/ (postinstall)
-npm start            # dev server on 127.0.0.1 only (see docs/rules/runtime-testing.md)
-npm run start:lan    # LAN dev server for physical devices; exposes the bundle to the network while running
-npm run ios          # iOS build + run (run `npm start` first)
-npm run android      # Android build + run (run `npm start` first)
-npm run typecheck    # TypeScript
-npm run lint         # ESLint 9 flat config
-npm test             # Vitest
-npm run verify       # typecheck + lint + test + check:harness (the Stop hook runs this)
-npm run app:init -- --slug <slug> --name "<Name>"   # template → new app
-npm run sync:codex   # regenerate .codex/agents + .agents/skills from .claude/
-npm run eas:build:prod:ios   # local production build → build-output/ (also :android; cloud: eas:build:prod:cloud)
-```
-
-## Branch Strategy
-
-Apps built from this template: `main` (production) ← `devel` (development) ← `feature/*`. This template repo has no `devel`; PRs merge into `main`.
+- **Identity**: `unity/Assets/Game/Editor/AppInfo.cs` is the single source (fastlane reads it). Bundle id `com.seungmanchoi.{slug without -}` cannot change after the first upload.
+- **iOS deploy**: `fastlane ios build_unity` (TestFlight build +1, Unity BuildIOS, `ITSAppUsesNonExemptEncryption=false`, sigh, manual signing on the `Unity-iPhone` target only, gym) → `fastlane ios upload`. Use the team distribution certificate already in `login.keychain`; never create certificates or keychains, never pass passwords on the command line.
+- **Android deploy**: keystore only through `ANDROID_KEYSTORE*` env vars; `fastlane android build_unity build:N` → `fastlane android internal` (the first AAB goes up by hand in Play Console).
+- **Simulator checks**: `fastlane ios build_unity_sim` → `xcrun simctl install booted <app>` → `xcrun simctl launch --console-pty booted <bundle>`; drive and read the UI with `sim-use` only.
