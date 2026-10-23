@@ -1,23 +1,29 @@
 #!/usr/bin/env node
-// Hard Threshold checks that ESLint/tsc can't see (config files, git state, harness copies).
-// Wrapper-bypass imports and UTC date keys are ESLint rules (eslint.config.js).
-// Part of `npm run verify`; exits 1 on any violation.
+// Hard Threshold checks for the Unity project (CLAUDE.md). There is no Unity compiler here, so these are
+// static checks on asmdefs, sources, package pins, ProjectSettings and git state. Part of `npm run verify`
+// (the Domain tests run next via dotnet test); exits 1 on any violation.
 import { execFileSync } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const read = (p) => (existsSync(join(root, p)) ? readFileSync(join(root, p), 'utf8') : '');
 const failures = [];
 const expect = (ok, message) => ok || failures.push(message);
-
-function walk(dir) {
-  return readdirSync(join(root, dir)).flatMap((name) => {
-    const p = join(dir, name);
-    return statSync(join(root, p)).isDirectory() ? walk(p) : [p];
-  });
-}
+const walk = (dir) =>
+  existsSync(join(root, dir))
+    ? readdirSync(join(root, dir)).flatMap((name) => {
+        const p = join(dir, name);
+        return statSync(join(root, p)).isDirectory() ? walk(p) : [p];
+      })
+    : [];
+// Comments and string literals are stripped so a "// TODO: UnityEngine" does not count.
+const code = (src) =>
+  src
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/\/\/.*$/gm, '')
+    .replace(/@?"(?:[^"\\\n]|\\.)*"/g, '""');
 
 // Codex copies match the .claude sources.
 try {
@@ -28,89 +34,119 @@ try {
   failures.push(e.stderr.toString().trim());
 }
 
-// NativeWind — one missing piece silently drops every className.
-expect(
-  /jsxImportSource:\s*'nativewind'/.test(read('babel.config.js')),
-  "babel.config.js: babel-preset-expo needs { jsxImportSource: 'nativewind' }",
+// The game folder is the one holding Editor/AppInfo.cs (Assets/Game until app:init --namespace).
+const assets = 'unity/Assets';
+const gameName = readdirSync(join(root, assets)).find((d) =>
+  existsSync(join(root, assets, d, 'Editor/AppInfo.cs')),
 );
+if (!gameName) {
+  console.error(`check-harness: no ${assets}/<Game>/Editor/AppInfo.cs`);
+  process.exit(1);
+}
+const game = `${assets}/${gameName}`;
+const ns = read(`${game}/Editor/AppInfo.cs`).match(/namespace (\w+)\.Editor/)?.[1];
+const cs = walk(game).filter((f) => f.endsWith('.cs'));
+const inLayer = (layer) => (f) => f.startsWith(`${game}/${layer}/`);
+
+// Pinned engine and packages. Bumping a pin is a deliberate change: update it here and in CLAUDE.md.
+const PINS = {
+  editor: '6000.3.26f1',
+  'com.unity.inputsystem': '1.20.0',
+  'com.unity.test-framework': '1.6.0',
+  'com.unity.ugui': '2.0.0',
+};
 expect(
-  read('babel.config.js').includes("'nativewind/babel'"),
-  "babel.config.js: missing 'nativewind/babel' preset",
+  read('unity/ProjectSettings/ProjectVersion.txt').includes(`m_EditorVersion: ${PINS.editor}\n`),
+  `ProjectVersion.txt: Unity editor must be ${PINS.editor}`,
 );
+const deps = JSON.parse(read('unity/Packages/manifest.json') || '{}').dependencies ?? {};
+for (const [pkg, version] of Object.entries(PINS).filter(([k]) => k !== 'editor'))
+  expect(deps[pkg] === version, `Packages/manifest.json: ${pkg} must be pinned to ${version}`);
+for (const [pkg, version] of Object.entries(deps))
+  expect(
+    /^\d+\.\d+\.\d+(-[\w.]+)?$/.test(version) || /#[0-9a-f]{7,40}$/.test(version),
+    `Packages/manifest.json: ${pkg} "${version}" is not an exact version (or a git URL pinned to a commit)`,
+  );
 expect(
-  read('metro.config.js').includes('withNativeWind('),
-  'metro.config.js: missing withNativeWind(config, { input: ./global.css })',
-);
-expect(
-  read('tailwind.config.js').includes("require('nativewind/preset')"),
-  'tailwind.config.js: missing nativewind/preset',
-);
-for (const d of ['base', 'components', 'utilities'])
-  expect(read('global.css').includes(`@tailwind ${d};`), `global.css: missing @tailwind ${d};`);
-expect(
-  read('app/_layout.tsx').includes("import '../global.css'"),
-  "app/_layout.tsx: missing import '../global.css'",
-);
-expect(
-  read('nativewind-env.d.ts').includes('nativewind/types'),
-  'nativewind-env.d.ts: missing nativewind/types reference',
+  /activeInputHandler: 1\b/.test(read('unity/ProjectSettings/ProjectSettings.asset')),
+  'ProjectSettings.asset: Active Input Handling must be the Input System (activeInputHandler: 1)',
 );
 
-// Screens are wrapped in a safe area (layouts and non-UI routes are exempt). Comments are
-// stripped so a "// TODO: SafeAreaView" does not count.
-const stripComments = (src) =>
-  src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1');
-for (const file of walk('app').filter(
-  (f) => f.endsWith('.tsx') && !/(^|\/)(_layout|\+html|\+native-intent)\.tsx$/.test(f),
-)) {
-  const code = stripComments(read(file));
-  if (/<Redirect\b/.test(code) && !/<(View|ScrollView|Text)\b/.test(code)) continue;
-  expect(
-    /SafeAreaView|useSafeAreaInsets/.test(code),
-    `${file}: screen has no SafeAreaView / useSafeAreaInsets`,
-  );
+// Assembly layering: Domain ← Platform ← Presentation ← Editor; Tests see Domain only.
+const ALLOWED = {
+  Domain: [],
+  Platform: ['Domain'],
+  Presentation: ['Domain', 'Platform'],
+  Editor: ['Domain', 'Platform', 'Presentation'],
+  'Tests.EditMode': ['Domain'],
+};
+for (const file of walk(game).filter((f) => f.endsWith('.asmdef'))) {
+  const asm = JSON.parse(read(file));
+  const layer = asm.name.slice(ns.length + 1);
+  expect(asm.name.startsWith(`${ns}.`) && layer in ALLOWED, `${file}: unknown assembly ${asm.name}`);
+  for (const ref of asm.references.filter((r) => r.startsWith(`${ns}.`)))
+    expect(
+      (ALLOWED[layer] ?? []).includes(ref.slice(ns.length + 1)),
+      `${file}: ${asm.name} must not reference ${ref} (layering)`,
+    );
+  if (layer === 'Domain') {
+    expect(asm.noEngineReferences === true, `${file}: Domain needs "noEngineReferences": true`);
+    expect(asm.references.length === 0, `${file}: Domain must not reference any assembly`);
+  }
 }
 
-// Firebase: native Analytics collection stays off until initAnalytics() (IS_PROD), config files
-// never committed. Each check applies only while that SDK is installed.
-const deps = JSON.parse(read('package.json')).dependencies ?? {};
-const rnFirebase = existsSync(join(root, 'firebase.json'))
-  ? (JSON.parse(read('firebase.json'))['react-native'] ?? {})
-  : {};
-if (deps['@react-native-firebase/analytics']) {
-  expect(
-    rnFirebase.analytics_auto_collection_enabled === false,
-    'firebase.json: analytics_auto_collection_enabled must be false (initAnalytics() enables it in production)',
-  );
-}
-if (deps['@react-native-firebase/crashlytics']) {
-  expect(
-    rnFirebase.crashlytics_auto_collection_enabled !== false,
-    'firebase.json: do not disable crashlytics_auto_collection_enabled',
-  );
-}
-const tracked = execFileSync('git', ['ls-files'], { cwd: root }).toString().split('\n');
-for (const f of tracked.filter((f) =>
-  /(^|\/)(GoogleService-Info\.plist|google-services\.json)$/.test(f),
-)) {
-  failures.push(`${f}: Firebase config must not be committed`);
+// Domain is pure and deterministic: no engine, no clock, no unseeded or global randomness.
+for (const f of cs.filter(inLayer('Domain'))) {
+  const src = code(read(f));
+  expect(!/\bUnity(Engine|Editor)\b/.test(src), `${f}: Domain must not use UnityEngine/UnityEditor`);
+  expect(!/DateTime\.(Utc)?Now|Stopwatch|Environment\.TickCount/.test(src), `${f}: Domain must not read the clock — pass time in`);
+  expect(!/new\s+(System\.)?Random\s*\(/.test(src), `${f}: Domain must use the seeded Rng, not System.Random`);
 }
 
-// Pins (CLAUDE.md): AdMob 17.1–17.2 break the Android Gradle config with the Expo plugin.
-if (deps['react-native-google-mobile-ads']) {
-  expect(
-    deps['react-native-google-mobile-ads'] === '17.0.0',
-    'package.json: react-native-google-mobile-ads must be pinned to exactly 17.0.0',
-  );
+// SDKs and native bridges only in Platform (ads, analytics, crash reporting, store review, IAP).
+const SDK = /\busing\s+(GoogleMobileAds|Firebase|Google\.Play|UnityEngine\.Purchasing|Unity\.Services)\b|\[DllImport\(/;
+for (const f of cs.filter((f) => !inLayer('Platform')(f) && !inLayer('Editor')(f)))
+  expect(!SDK.test(code(read(f))), `${f}: SDK / native calls belong in ${game}/Platform`);
+
+// Every code-built canvas follows the safe area.
+for (const f of cs.filter(inLayer('Presentation'))) {
+  const src = code(read(f));
+  if (/AddComponent<CanvasScaler>|typeof\(CanvasScaler\)/.test(src))
+    expect(/Screen\.safeArea/.test(src), `${f}: builds a Canvas but never applies Screen.safeArea`);
 }
 
-// ATT purpose string that Apple auto-rejects as placeholder text.
-for (const f of ['app.config.ts', ...walk('plugins')]) {
+// Local calendar days come from local time; UTC is for stored timestamps only.
+for (const f of cs) {
+  const src = read(f);
   expect(
-    !read(f).includes('deliver personalized ads to you'),
+    !/UtcNow(\.Date\b|\.ToString\(\s*"yyyy-MM-dd")/.test(src),
+    `${f}: local day key from UTC — use DateTime.Now.ToString("yyyy-MM-dd")`,
+  );
+  // PlayerPrefs is plain text (NSUserDefaults / SharedPreferences): never tokens or secrets.
+  expect(
+    !/PlayerPrefs\.Set\w+\(\s*"[^"]*(token|secret|password|receipt)/i.test(src),
+    `${f}: secrets in PlayerPrefs — use the Keychain/Keystore bridge (docs/rules/secure-storage.md)`,
+  );
+  expect(
+    !src.includes('deliver personalized ads to you'),
     `${f}: generic ATT purpose string (auto-rejected) — rewrite it per app`,
   );
 }
+
+// Never committed: Firebase config, signing material, generated scenes, Unity caches.
+const tracked = execFileSync('git', ['ls-files'], { cwd: root }).toString().split('\n').filter(Boolean);
+for (const f of tracked) {
+  if (/(^|\/)(GoogleService-Info\.plist|google-services\.json)$/.test(f))
+    failures.push(`${f}: Firebase config must not be committed`);
+  if (/\.(p12|p8|jks|keystore|mobileprovision)$|(^|\/)credentials\.json$/.test(f))
+    failures.push(`${f}: signing material must not be committed`);
+  if (/^unity\/(Library|Temp|Logs|UserSettings|Build)\/|^unity\/Assets\/[^/]+\/Generated\//.test(f))
+    failures.push(`${f}: generated/cache file must not be committed`);
+}
+// Every asset has its .meta (Unity regenerates a missing one with a new GUID and breaks references).
+const trackedSet = new Set(tracked);
+for (const f of tracked.filter((f) => f.startsWith(`${assets}/`) && !f.endsWith('.meta')))
+  expect(trackedSet.has(`${f}.meta`), `${f}: missing ${relative(root, join(root, f))}.meta in git — let Unity generate it, then commit it`);
 
 if (failures.length) {
   console.error(`check-harness: ${failures.length} violation(s)\n  - ${failures.join('\n  - ')}`);

@@ -1,0 +1,17 @@
+{
+  "name": "unity-agent-template",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Node scripts for the agent harness only — the game itself lives in unity/.",
+  "scripts": {
+    "check:harness": "node scripts/check-harness.mjs",
+    "test": "dotnet test unity/DomainTests~ --nologo",
+    "verify": "npm run --silent check:harness && if command -v dotnet >/dev/null 2>&1; then npm run --silent test; else echo 'verify: dotnet SDK 가 없어 Domain 테스트를 건너뛴다 (brew install dotnet)'; fi",
+    "unity": "node scripts/unity.mjs",
+    "app:init": "node scripts/init-app.mjs",
+    "sync:codex": "node scripts/sync-codex-harness.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
