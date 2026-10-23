@@ -1,722 +1,194 @@
 <p align="center">
-  <img src="https://img.shields.io/badge/React_Native-0.86-61DAFB?style=for-the-badge&logo=react&logoColor=white" />
-  <img src="https://img.shields.io/badge/Expo-SDK_57-000020?style=for-the-badge&logo=expo&logoColor=white" />
-  <img src="https://img.shields.io/badge/TypeScript-6.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white" />
-  <img src="https://img.shields.io/badge/Feature--Sliced_Design-FSD-orange?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Unity-6000.3.26f1-000000?style=for-the-badge&logo=unity&logoColor=white" />
+  <img src="https://img.shields.io/badge/C%23-9-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" />
+  <img src="https://img.shields.io/badge/Input_System-1.20.0-222222?style=for-the-badge&logo=unity&logoColor=white" />
+  <img src="https://img.shields.io/badge/uGUI-2.0.0-222222?style=for-the-badge&logo=unity&logoColor=white" />
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Claude_Code-Harness-purple?style=for-the-badge&logo=anthropic&logoColor=white" />
+  <img src="https://img.shields.io/badge/Codex-Design_Review-111111?style=for-the-badge&logo=openai&logoColor=white" />
   <img src="https://img.shields.io/badge/Agents-10_Specialists-blueviolet?style=for-the-badge" />
   <img src="https://img.shields.io/badge/Skills-11_Workflows-green?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Pattern-Pipeline-yellow?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Vibe_Coding-AI_Driven-ff69b4?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Harness_Engineering-Production-red?style=for-the-badge" />
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Expo_Router-57-000020?style=flat-square&logo=expo&logoColor=white" />
-  <img src="https://img.shields.io/badge/Zustand-5-433E38?style=flat-square&logo=zustand&logoColor=white" />
-  <img src="https://img.shields.io/badge/TanStack_Query-5-FF4154?style=flat-square&logo=reactquery&logoColor=white" />
-  <img src="https://img.shields.io/badge/NativeWind-4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white" />
-  <img src="https://img.shields.io/badge/Tailwind_CSS-3.4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white" />
-  <img src="https://img.shields.io/badge/Axios-1.x-5A29E4?style=flat-square&logo=axios&logoColor=white" />
-  <img src="https://img.shields.io/badge/React_Hook_Form-7-EC5990?style=flat-square&logo=reacthookform&logoColor=white" />
-  <img src="https://img.shields.io/badge/Zod-4-3E67B1?style=flat-square&logo=zod&logoColor=white" />
-  <img src="https://img.shields.io/badge/ESLint-9-4B32C3?style=flat-square&logo=eslint&logoColor=white" />
-  <img src="https://img.shields.io/badge/Prettier-3-F7B93E?style=flat-square&logo=prettier&logoColor=black" />
-  <img src="https://img.shields.io/badge/EAS_Build-CLI-000020?style=flat-square&logo=expo&logoColor=white" />
-  <img src="https://img.shields.io/badge/Reanimated-4-6236FF?style=flat-square&logo=react&logoColor=white" />
-  <img src="https://img.shields.io/badge/Flash_List-2-FF6C37?style=flat-square&logo=shopify&logoColor=white" />
-  <img src="https://img.shields.io/badge/Day.js-1.11-FF5F4C?style=flat-square" />
-  <img src="https://img.shields.io/badge/Firebase_Analytics-26-FFCA28?style=flat-square&logo=firebase&logoColor=black" />
-  <img src="https://img.shields.io/badge/AdMob-17-EA4335?style=flat-square&logo=googleads&logoColor=white" />
-  <img src="https://img.shields.io/badge/SecureStore-Keychain%20%7C%20Keystore-4630EB?style=flat-square&logo=expo&logoColor=white" />
-  <img src="https://img.shields.io/badge/Vitest-4-6E9F18?style=flat-square&logo=vitest&logoColor=white" />
-</p>
-
-<p align="center">
-  <img src="https://img.shields.io/badge/platform-iOS%20%7C%20Android%20%7C%20Web-lightgrey?style=flat-square" />
+  <img src="https://img.shields.io/badge/platform-iOS%20%7C%20Android-lightgrey?style=flat-square" />
+  <img src="https://img.shields.io/badge/tests-dotnet%20test%20%7C%20Unity%20EditMode-6E9F18?style=flat-square" />
+  <img src="https://img.shields.io/badge/deploy-fastlane-00F200?style=flat-square&logo=fastlane&logoColor=black" />
   <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" />
-  <img src="https://img.shields.io/badge/node-%3E%3D24-339933?style=flat-square&logo=nodedotjs&logoColor=white" />
 </p>
 
 [English](./README.md) | **한국어**
 
-# React Native FSD Agent Template
+# Unity Agent Template
 
-AI 에이전트 기반 풀 라이프사이클 개발을 지원하는 React Native + Expo + Feature-Sliced Design 프로덕션 템플릿.
+Claude Code 와 Codex 가 아이디어부터 스토어 배포, 출시 후 고도화까지 진행하는 Unity 모바일 게임 템플릿.
 
-> **What makes this different?** 이 템플릿은 FSD 아키텍처 규칙을 이해하는 10개의 Claude Code 에이전트와 10개의 스킬을 포함합니다. "앱 만들어줘" 한 마디로 아이디어 도출부터 시장 조사 → 기획 → 디자인 시스템 → FSD 모듈 스캐폴딩 → API 연동 → 스크린 개발 → QA 검증까지 전체 파이프라인이 자동으로 실행됩니다. 출시 후에는 **지속 개선 루프**(`/iterate-app`)가 현황을 진단하고 KPI 갭·기술부채·커버리지로 순위를 매겨 다음 고도화를 추천한 뒤, 한 슬라이스를 만들고 검증하고 다음 작업을 추천합니다.
+> **무엇이 다른가?** 에이전트가 Unity Editor 를 열지 않는다. C# 과 원본 에셋이 정본이고, 씬은 Editor 스크립트가 batchmode 로 만든다. 게임 규칙은 엔진과 분리된 순수 C# 이라 Unity 라이선스 없이 `dotnet test` 로 검증된다. 화면은 시뮬레이터에서 `sim-use` 로 조작하고, 디자인은 실제 캡처를 Codex 가 4축으로 평가한다. 배포는 Unity → Xcode → fastlane 으로 TestFlight 까지 한 번에 간다. [react-native-fsd-agent-template](https://github.com/seungmanchoi/react-native-fsd-agent-template) 의 하네스(에이전트·스킬·verify 게이트·Claude/Codex 공용)를 Unity 에 맞게 옮겼다.
 
 ---
 
 ## Full Pipeline
 
 ```
-Phase 1: Ideation       idea-researcher   시장 조사, 경쟁 앱 분석, 아이디어 도출
-           │
-Phase 2: Planning       product-planner   PRD, 유저 스토리, FSD 모듈 맵 설계
-           │
-Phase 2.5: Spec Planning  spec-planner    피처별 스펙 문서, phase/task 분해, 진 행 추적
-           │
-Phase 3: Design         design-architect  NativeWind 테마, 화면 레이아웃
-           │
-Phase 4: Implementation (순차 + spec task 체크 병행)
-  4a       feature-builder   FSD 모듈, Zustand store, TypeScript 타입
-  4b       api-integrator    Axios 클라이언트, TanStack Query hooks
-  4c       ui-developer      Expo Router 스크린, NativeWind UI
-           │
-Phase 5: QA (병렬)
-  5a       qa-reviewer       코드 품질, TypeScript strict, FSD 규칙
-  5b       app-inspector     기능/UX 검사, Safe Area, 접근성
-           │
-Phase 6: Iteration      Fix Loop (최대 3회, 출시 전 수렴)
-           │
-Phase 7: Deployment     /store-deploy → local build (eas build --local) → App Store / Google Play
-═══════════════════════════════════════════════════════════════════════
-출시 후 지속 개선 루프 (반복):
-  Assess → 다음 고도화 추천 → 한 슬라이스 개발 → 검증 → 회고
-           loop-engineer  (/iterate-app)
+"게임 만들어줘"
+  Phase 0   Survey          init-app → _workspace/spec.md
+  Phase 1   Ideation        idea-researcher
+  Phase 2   Planning        product-planner     PRD · 코어 루프 · KPI · 모듈 맵
+  Phase 2.5 Spec            spec-planner        docs/specs/ phase·task
+  Phase 3   Design          design-architect    Theme 토큰 → Codex design-review
+  Phase 4   Implementation  module-builder → presentation-developer → platform-integrator (단계마다 Quick QA)
+  Phase 5   QA              qa-reviewer + app-inspector (시뮬레이터)
+  Phase 5.5 Design QA       Codex 4축 리뷰, GO 까지
+  Phase 6   Iteration       Fix Loop 최대 3회
+  Phase 7   Deploy          /store-deploy → fastlane ios build_unity → upload
+"다음 뭐 만들지"
+  Loop      Assess → Recommend → Develop → Verify → Reflect   loop-engineer (/iterate-app)
 ```
-
-데이터 흐름: 에이전트 간 컨텍스트는 `_workspace/` 디렉토리를 통해 전달됩니다. 출시 후 증분 작업은 일회성 파이프라인을 재실행하지 않고 `/iterate-app` 루프를 사용합니다.
-
----
 
 ## Agent Team
 
-| 에이전트 | 역할 | 트리거 |
-|---------|-----|-------|
-| **idea-researcher** | 시장 조사, 앱 아이디어 도출 | "앱 아이디어 찾아줘" |
-| **product-planner** | PRD, FSD 모듈 맵, 유저 스토리 | "앱 기획해줘" |
-| **spec-planner** | 피처별 스펙 문서, phase/task 분해, 진행 추적 | Phase 2 완료 후 자동 |
-| **design-architect** | 디자인 시스템, NativeWind 테마 | "디자인 시스템 만들어 줘" |
-| **feature-builder** | FSD 모듈 스캐폴딩 | "feature/entity 만들어줘" |
-| **api-integrator** | Axios + TanStack Query + Zustand | "API 연동해줘" |
-| **ui-developer** | NativeWind 스크린 & UI 컴포넌트 | "스크린 만들어줘" |
-| **qa-reviewer** | 코드 품질, TypeScript, FSD 규칙 | 각 Phase 자동 실행 |
-| **app-inspector** | 기능/UX 검사, Safe Area, 접근성 | "앱 검사해줘" |
-| **loop-engineer** | 출시 후 지속 고도화 루프, 다음 작업 추천(KPI 갭·기술부채·커버리지 랭킹) | "다음 뭐 만들지" / "고도화해줘" |
-
----
+| Agent | 역할 |
+|-------|------|
+| `idea-researcher` | 모바일 게임 시장·경쟁작 조사, 아이디어 도출 |
+| `product-planner` | PRD, 코어 루프, 재미 게이트, KPI, 모듈 맵 |
+| `spec-planner` | 피처별 스펙, phase/task 분해, 진행 추적 |
+| `design-architect` | 비주얼 방향, `Theme.cs` 토큰, Codex 디자인 리뷰 운영 |
+| `module-builder` | Domain 모듈(순수 C# 규칙·시뮬레이션)과 NUnit 테스트 |
+| `presentation-developer` | 코드로 만드는 uGUI 화면, 입력, FX, 오디오, 씬 생성기 |
+| `platform-integrator` | 햅틱·저장·평점·광고·Analytics·네이티브 브리지 |
+| `qa-reviewer` | verify · Unity 컴파일 · Hard Threshold 판정 |
+| `app-inspector` | 시뮬레이터 기능/UX 검수 (`sim-use`, 캡처) |
+| `loop-engineer` | 출시 후 다음 작업 추천과 고도화 루프 |
 
 ## Skills
 
-| 스킬 | 커맨드 | 설명 |
-|-----|-------|-----|
-| `init-app` | "새 앱 시작" | 템플릿 식별자(slug·bundle id·scheme·다국어 이름) 교체 |
-| `ideate` | "앱 아이디어 찾아줘" | 시장 조사 및 앱 아이디어 도출 |
-| `plan-app` | "앱 기획해줘" | PRD 작성 및 FSD 모듈 맵 설계 |
-| `design-system` | "디자인 시스템 만들어줘" | NativeWind 테마 및 화면 레이아웃 |
-| `create-feature` | "피처 만들어줘" | FSD feature 모듈 스캐폴딩 |
-| `create-entity` | "엔티티 만들어줘" | FSD entity 도메인 모델 생성 |
-| `create-screen` | "스크린 추가해줘" | Expo Router 스크린 생성 |
-| `inspect-app` | "앱 검사해줘" | 기능/UX 전체 검사 |
-| `orchestrate` | "앱 만들어줘" | 전체 파이프라인 오케스트레이션 (일회성 빌드) |
-| `iterate-app` | "다음 뭐 만들지" / "고도화해줘" | 출시 후 개발→검증→다음 추천 지속 루프 |
-| `sim-use` | (런타임 테스트 시 사용) | 요소 별칭으로 iOS 시뮬레이터 / Android 에뮬레이터 조작 |
+| Skill | 하는 일 |
+|-------|--------|
+| `init-app` | slug · 이름 · bundle id · 네임스페이스 교체 |
+| `ideate` / `plan-app` | 아이디어, PRD |
+| `design-system` | 팔레트·타이포·간격 토큰과 레이아웃 |
+| `design-review` | 시뮬레이터 캡처 → Codex 4축 평가 → 수정 → 재리뷰 |
+| `create-module` | Domain 모듈 + 테스트 |
+| `create-screen` | uGUI 화면/상태 추가 |
+| `inspect-app` | 시뮬레이터 전체 검수 |
+| `orchestrate` | 전체 파이프라인 |
+| `iterate-app` | 출시 후 지속 고도화 루프 |
+| `sim-use` | 시뮬레이터·에뮬레이터 조작 |
 
----
+배포는 [`store-deploy`](https://github.com/seungmanchoi/store-deploy-plugin) 플러그인(`/store-deploy`)이 맡는다. `.claude/settings.json` 이 등록한다.
 
-## Architecture Pattern
-
-파이프라인은 두 가지 패턴을 혼합합니다.
-
-- **Phase 1–2**: 순차 파이프라인 — 각 에이전트의 출력이 다음 에이전트의 입력이  됩니다.
-- **Phase 2.5**: Spec Planning — PRD를 `docs/specs/`에 피처별 phase/task로 분해. 이후 구현 진행 추적의 기준이 됩니다.
-- **Phase 3**: Design — 디자인 시스템, 테마, 화면 레이아웃 설계.
-- **Phase 4**: Fan-out (순차) — feature-builder → api-integrator → ui-developer. **각 task 완료 시 spec 체크박스 업데이트**.
-- **Phase 5**: 병렬 실행 — qa-reviewer와 app-inspector가 동시에 검사.
-- **Phase 6**: Fix Loop — 최대 3회 반복(출시 전 수렴) 후 미해결 이슈는 TODO 마킹.
-- **출시 후**: 지속 개선 루프(`/iterate-app`) — 현황 진단 → 다음 고도화 추천 → 한 슬라이스 개발 → 검증 → 회고를 반복. `loop-engineer`가 주도하며 전체 파이프라인을 재실행하지 않음. (`.claude/skills/orchestrate/references/loop-engineering.md`)
-
-### Harness Design Principles
-
-[Anthropic의 공식 하네스 설계 가이드](https://www.anthropic.com/engineering/harness-design-long-running-apps)와 [revfactory/harness](https://github.com/revfactory/harness)를 기반으로 설계되었습니다.
-
-| 원칙 | 설명 |
-|------|------|
-| **Context Reset** | Phase 간 `_workspace/`에 산출물 저장 후 컨텍스트 리셋. Compaction보다 효과적 |
-| **Sprint 기반 분해** | Phase 4에서 feature 단위 스프린트. 각 스프린트마다 구현→평가→수정 |
-| **독립 Evaluator** | Generator(builder/integrator/developer)와 Evaluator(reviewer/inspector) 분리 |
-| **Hard Threshold** | pass/fail 경성 기준. typecheck 0 에러, any 0개, FSD 위반 0개 |
-| **디자인 4축 평가** | Design Quality(30%), Originality(25%), Craft(25%), Functionality(20%) |
-| **디자인 가드레일** | Do's & Don'ts로 AI의 오프브랜드 선택을 사전 차단 |
-| **능동 테스트** | 정적 분석 + `npm run typecheck/lint` 실행 + import 순환 참조 탐지 + `sim-use` 런타임 시뮬레이터 검증(observe → act → verify) |
-| **지속 개선 루프** | 출시 후 개발→검증→다음 추천을 한 사이클 한 슬라이스씩, KPI 갭·가치·노력·부채·커버리지로 랭킹 |
-
-### 코딩 원칙 — ponytail (선택)
-
-하네스는 **ponytail**("lazy senior dev") 플러그인을 권장한다: 존재하지 않아도 되는 코드가 최고의 코드. 사다리(YAGNI → 기존 것 재사용 → 표준 라이브러리 → 네이티브 → 설치된 의존성 → 한 줄 → 최소 코드)와 증상이 아닌 **근본 원인** 버그 수정을 강제한다. `.claude/settings.json`에 선언돼 있어 클론 시 `DietrichGebert/ponytail` 마켓플레이스에서 설치 프롬프트가 뜬다. `/ponytail lite|full|ultra`로 토글. 원칙은 `CLAUDE.md`에도 baked-in되어 플러그인 없이도 적용된다.
-
-### 코드 인텔리전스 — codegraph (선택)
-
-구조적 코드 질문(무엇이 무엇을 호출/파급/정의하는지)에는 하네스가 **codegraph**(tree-sitter 지식 그래프, `codegraph_*` MCP 도구)를 사용한다. 선택 사항이며 없으면 grep으로 fallback한다. `codegraph init -i`로 인덱스를 빌드하고(`.codegraph/`는 gitignore), `orchestrate` Phase 0가 감지, `/iterate-app`이 매 사이클 재동기화한다. 도구 선택표는 `docs/rules/tooling.md` 의 "CodeGraph" 섹션 참고.
-
----
-
-## Tech Stack
-
-| Category | Technology |
-|----------|-----------|
-| Framework | React Native 0.86 + Expo SDK 57 (React 19.2, New Architecture, Hermes) |
-| Language | TypeScript 6.0 (strict mode) |
-| Routing | Expo Router 57 (file-based) |
-| Global State | Zustand 5 |
-| Server State | TanStack Query 5 |
-| Styling | NativeWind 4 (Tailwind CSS 3.4) |
-| Form & Validation | React Hook Form 7 + Zod 4 |
-| API Client | Axios (auto token refresh) |
-| Animation | Reanimated 4 |
-| List | FlashList 2 (Shopify) |
-| Bottom Sheet | Native `formSheet` (Expo Router) |
-| Date | Day.js |
-| Lint & Format | ESLint 9 + Prettier 3 |
-| Testing | Vitest 4 |
-| Ads | react-native-google-mobile-ads 17.0.0 (UMP consent + ATT) |
-| Analytics | Firebase Analytics + Crashlytics 26 (modular API, Expo Go 자동 no-op) |
-| Secure Storage | expo-secure-store (Keychain / Keystore) |
-| In-App Review | expo-store-review (policy-gated) |
-| i18n | i18n-js |
-| Build & Deploy | EAS Build (로컬 기본) / EAS Submit, store-deploy 플러그인 사용 |
-
----
-
-## Production Modules
-
-에이전트 하네스 외에도, 이 템플릿은 수익화·측정·보안 인증을 위한 **바로 쓸 수 있는 프로덕션 모듈**을 기본 내장합니다. 각 모듈은 FSD 레이어링과 단일 진입점 규칙을 따릅니다.
-
-### 광고 — AdMob (`src/features/ads/`)
-
-UMP(GDPR) 동의, iOS ATT, SDK 초기화를 **필수 순서**로 실행합니다. 루트 레이아웃은 **오직** `initializeAdsWithConsent()` 만 호출하고 await 하지 않습니다(첫 렌더를 막지 않음):
-
-```tsx
-// app/_layout.tsx
-import { initializeAdsWithConsent } from '@features/ads';
-useEffect(() => { void initializeAdsWithConsent(); }, []);
-```
+## Architecture
 
 ```
-UMP(GDPR) 동의  →  iOS ATT 프롬프트  →  setRequestConfiguration()  →  mobileAds().initialize()
+unity/Assets/Game/
+  Domain/        Game.Domain        순수 C# (noEngineReferences) — 결정적 고정 스텝, 시드 Rng, 시계 없음
+  Platform/      Game.Platform      SDK·네이티브 브리지는 여기만 (Haptics 샘플)
+  Presentation/  Game.Presentation  MonoBehaviour, 코드로 만드는 uGUI, Input System
+  Editor/        Game.Editor        AppInfo · Build(Generate/BuildIOS/BuildAndroid) · RenderCheck
+  Tests/EditMode Game.Tests.EditMode
+  Content/       폰트(Noto Sans KR, OFL)·아이콘·원본 에셋
+  Generated/     Generate 산출물 (gitignore)
+unity/DomainTests~/   dotnet test 프로젝트 (Domain + EditMode 테스트 소스를 컴파일)
 ```
 
-- 훅: `useInterstitialAd`, `useRewardedAd`, `useAppOpenAd`, `useAdLifecycle`, `usePremiumGuard`
-- 컴포넌트: `AdBanner`, `AdDevPanel` (개발 전용 테스트 패널)
-- 빈도 제한·프리미엄 게이팅은 `useAdStore` / `usePremiumStore` (Zustand): 전면 광고 공유 쿨다운, 인터스티셜 하루 상한, 로드 실패 백오프. 배너 클릭 가드, 리워드 하루 상한, 세션당 상한, `tap_ad` 이벤트는 PRD가 정할 때만 더한다
-- 개발 환경은 Google **테스트 광고 단위**, 프로덕션은 `src/shared/config/ads.ts`의 실제 ID 사용. 실제 ID 는 store-deploy 플러그인의 `store-admob` 스킬로 만든다 (앱이 부르는 형식만 `--ad-types` 로)
-- 핵심 액션 직전이나 카메라/핵심 화면에는 **절대** 광고 배치 금지
+의존 방향은 `Domain ← Platform ← Presentation ← Editor`, 테스트는 Domain 만 본다. `npm run verify` 가 asmdef 참조, Domain 순수성, SDK 위치, safe area, 버전 고정, 커밋하면 안 되는 파일을 검사한다.
 
-### Analytics — Firebase (`src/shared/lib/analytics/`)
-
-**Firebase / no-op 어댑터**를 가진 얇은 래퍼(RN Firebase v26 modular API) — Expo Go(네이티브 모듈 없음)에서는 자동으로 no-op으로 폴백하고, 수집은 production 빌드에서만 켜집니다. 화면 조회는 루트 레이아웃이 자동 기록하고, `recordError()`는 Crashlytics로 보냅니다.
-
-```ts
-import { initAnalytics, logEvent, logScreenView } from '@shared/lib/analytics';
-```
-
-- 래퍼만 사용 — `@react-native-firebase/*` 직접 import 금지
-- 이벤트 이름은 `EAnalyticsEvent`에 정의(매직 스트링 금지), 파라미터에 PII 금지
-
-### 보안 토큰 저장 (`src/shared/api/client.ts`)
-
-인증 토큰은 평문 AsyncStorage가 아니라 **`expo-secure-store` 기반 Keychain / Keystore**(`tokenManager`)에 저장됩니다. Axios 클라이언트는 `401` 시 자동으로 토큰을 갱신하고, 새 토큰이 올 때까지 동시 요청을 큐에 쌓아 재시도합니다.
-
-```ts
-import { api, tokenManager, setAuthFailureCallback } from '@shared/api';
-```
-
-### 인앱 평점 (`src/shared/store-review/`)
-
-스토어 평점 요청을 중앙 정책 엔진으로 게이팅합니다 — `expo-store-review`를 직접 호출하지 않습니다. `maybeRequest()`는 **모든** 게이트를 통과할 때만 호출됩니다(설치 3일+, 실행 5회+, 핵심 액션 3회+, 마지막 요청 후 90일+, 연 3회 이하, 실행 직후 120초 쿨다운, UI idle, 최근 에러 없음).
-
-```ts
-import { useStoreReview, REVIEW_TRIGGERS } from '@shared/store-review';
-const { maybeRequest } = useStoreReview();
-// 긍정적 액션의 성공 콜백 안, UI가 idle일 때:
-await maybeRequest(REVIEW_TRIGGERS.AFTER_TASK_COMPLETE, { uiIsIdle: true });
-```
-
-- 정책 엔진(`canRequestReview`)은 순수 함수로 단위 테스트됨(`policy.test.ts`)
-- 트리거 ID는 `REVIEW_TRIGGERS`에서만(매직 스트링 금지), 매 요청은 `request_store_review` 로깅
-- 카운터는 AsyncStorage에 persist(비민감), `recordLaunch()`는 `_layout.tsx`에서 실행
-- 임계값·호출 위치는 앱마다 다름 — PRD에 맞게 배선
-
-### Config Plugins (`plugins/`)
-
-| Plugin | 역할 |
-|--------|------|
-| `withLocalizedAppName` | 홈화면 다국어 앱 이름(iOS `InfoPlist.strings` / Android `strings.xml`) |
-| `withLocalizedAttDescription` | iOS ATT 프롬프트 다국어 메시지(Android no-op) |
-
----
+샘플 게임은 "표적 탭"이다. `GameSim` 이 60Hz 고정 스텝으로 표적을 옮기고, `GameController` 가 Title → Play → Result 상태 머신과 uGUI 를 코드로 만든다. 실제 게임으로 바꿀 때도 이 모양(시드와 규칙을 받는 Domain, 그것을 그리는 Presentation)을 유지한다.
 
 ## Getting Started
 
-### 1. 템플릿 사용
+### 1. 준비물
 
-GitHub에서 **"Use this template"** 버튼을 클릭하거나:
+- Unity Hub + Unity **6000.3.26f1** (iOS · Android Build Support), Personal 라이선스로 로그인
+- .NET SDK 10 (`brew install dotnet`) — Domain 테스트
+- Node 20+ — 하네스 스크립트
+- Xcode, fastlane, [`sim-use`](https://github.com/lycorp-jp/sim-use) (`brew tap lycorp-jp/tap && brew install lycorp-jp/tap/sim-use`)
 
-```bash
-gh repo create my-app --template seungmanchoi/react-native-fsd-agent-template --clone
-cd my-app
-```
-
-### 2. 의존성 설치
+### 2. 템플릿에서 새 게임 만들기
 
 ```bash
-npm install
+gh repo create my-new-game --template seungmanchoi/unity-agent-template --private --clone
+cd my-new-game
+npm run app:init -- --slug pocket-pulse --name "Pocket Pulse"   # 네임스페이스 기본값: PocketPulse
+npm run sync:codex && npm run verify
+npm run unity -- generate      # 처음 열 때 Library 를 만든다 (몇 분)
 ```
 
-### 3. 새 앱으로 초기화
+### 3. 확인
 
 ```bash
-npm run app:init -- --slug pocket-pulse --name "Pocket Pulse" --ko "포켓 펄스"
-npm install
+npm test                       # Domain 테스트 (라이선스 불필요)
+npm run unity -- test          # Unity EditMode 테스트
+npm run unity -- render        # unity/Build/render-check/*.png
+fastlane ios build_unity_sim   # 시뮬레이터 앱 → xcrun simctl install booted <app>
 ```
 
-slug·bundle id(`com.seungmanchoi.{slug}`)·scheme·다국어 홈 화면 이름·ATT 문구의 앱 이름을 바꾼다. 남은 수동 단계(ATT 문구 재작성, `firebase/` 설정 파일, `eas init`)는 출력과 `init-app` 스킬이 안내한다. 에이전트에게 "새 앱 시작해줘"라고 해도 같은 스킬이 실행된다.
-
-### 4. 환경 설정
-
-```bash
-cp .env.example .env
-```
-
-`.env` 파일을 수정하여 API URL 등을 설정합니다.
-
-### 5. 실행
-
-```bash
-npm start          # Expo Dev Server (127.0.0.1 전용)
-npm run ios        # iOS Simulator (npm start 를 띄운 채 다른 터미널에서)
-npm run android    # Android Emulator (npm start 를 띄운 채 다른 터미널에서)
-```
-
-### 6. AI Agent Harness 사용 (Claude Code · Codex)
-
-같은 에이전트·스킬을 두 도구가 같이 쓴다. 원본은 `.claude/`, Codex 사본은 `npm run sync:codex` 가 만든다.
-
-| | Claude Code | Codex CLI |
-|---|---|---|
-| 스킬 호출 | `/orchestrate`, `/iterate-app`, 또는 자연어 | `$orchestrate`, `/skills` 에서 선택, 또는 자연어 |
-| 반복 고도화 | `/loop /iterate-app` | "iterate-app 3 사이클 돌려줘" (`/loop` 없음) |
-| 검증 hook | 자동 (`.claude/settings.json`) | 처음 한 번 `/hooks` 에서 `.codex/hooks.json` 신뢰 |
-| 배포 스킬 | 클론 시 store-deploy 플러그인 설치 안내가 뜬다 | `codex plugin marketplace add seungmanchoi/store-deploy-plugin` → `codex plugin add store-deploy@store-deploy-marketplace` |
-
-에이전트가 턴을 끝낼 때 코드가 바뀌었으면 Stop hook 이 `npm run verify`(typecheck · lint · test · 하네스 검사)를 돌리고, 실패하면 에이전트에게 고치라고 되돌린다.
-
-```bash
-# 전체 파이프라인 — 앱을 처음부터 끝까지 만들기
-"커피 구독 앱을 만들어줘"
-
-# 개별 스킬 — 특정 기능만 추가
-"상품 목록/상세 기능을 만들어줘. API는 /products 엔드포인트"
-
-# → feature-builder: src/features/product/ 스캐폴딩
-# → api-integrator: API 함수 + useProducts 훅 생성
-# → ui-developer: 상품 리스트/상세 스크린 생성
-# → qa-reviewer: FSD 규칙 + 타입 검증
-```
-
----
-
-## Project Structure
+### 4. AI Agent Harness 사용
 
 ```
-.
-├── .claude/
-│   ├── agents/                         # AI Agent definitions
-│   │   ├── idea-researcher.md          # 시장 조사, 아이디어 도출
-│   │   ├── product-planner.md          # PRD, FSD 모듈 맵
-│   │   ├── design-architect.md         # 디자인 시스템, 레이아웃
-│   │   ├── feature-builder.md          # FSD module scaffolding
-│   │   ├── api-integrator.md           # API + state management
-│   │   ├── ui-developer.md             # UI/Screen development
-│   │   ├── spec-planner.md             # Spec docs, phase/task 분해
-│   │   ├── qa-reviewer.md              # Code quality assurance
-│   │   ├── app-inspector.md            # Functional/UX inspection
-│   │   └── loop-engineer.md            # 출시 후 고도화 루프, 다음 작업 추천
-│   └── skills/                         # AI Skills
-│       ├── ideate/                     # 아이디어 도출
-│       ├── plan-app/                   # 앱 기획
-│       ├── design-system/              # 디자인 시스템
-│       ├── create-feature/             # Feature scaffolding
-│       ├── create-entity/              # Entity scaffolding
-│       ├── create-screen/              # Screen creation
-│       ├── inspect-app/                # App inspection
-│       ├── iterate-app/                # 출시 후 지속 개선 루프
-│       ├── sim-use/                    # 시뮬레이터 런타임 테스트 (sim-use CLI)
-│       └── orchestrate/                # Full pipeline orchestration
-│           └── references/             # harness-principles, loop-engineering, deploy-build-troubleshooting
-│
-├── docs/
-│   ├── specs/                         # 피처별 스펙 문서 (spec-planner 출력)
-│   │   ├── README.md                  # 진행 현황 대시보드
-│   │   └── {NN}-{feature}/            # 피처별 phase 파일
-│   │       ├── phase1-mvp.md
-│   │       └── phase2-enhancement.md
-│   └── troubleshooting.md             # 빌드/런타임 트러블슈팅
-│
-├── _workspace/                         # 에이전트 간 데이터 교환
-│   ├── idea/                           # Phase 1 출력
-│   ├── plan/                           # Phase 2 출력
-│   ├── design/                         # Phase 3 출력
-│   ├── implementation/                 # Phase 4 출력
-│   └── qa/                             # Phase 5 출력
-│
-├── app/                                # Expo Router (file-based routing)
-│   ├── _layout.tsx                     # Root layout (providers + ads/analytics init)
-│   ├── (auth)/                         # Auth group (unauthenticated)
-│   │   ├── _layout.tsx
-│   │   └── login.tsx
-│   └── (tabs)/                         # Tab group (authenticated)
-│       ├── _layout.tsx                 # Bottom tabs
-│       ├── index.tsx
-│       ├── explore.tsx
-│       └── profile.tsx
-│
-├── src/
-│   ├── core/                           # App initialization
-│   │   └── providers/                  # QueryProvider, ThemeProvider
-│   │
-│   ├── features/                       # Business logic features
-│   │   ├── auth/                       # Example: authentication
-│   │   │   ├── api/                    # API calls
-│   │   │   ├── hooks/                  # useLogin, useSignup
-│   │   │   ├── types/                  # ILoginRequest, ILoginResponse
-│   │   │   └── index.ts                # Public API
-│   │   └── ads/                        # AdMob: UMP+ATT consent, ad hooks, premium store
-│   │       ├── lib/consent.ts          # initializeAdsWithConsent (UMP→ATT→init)
-│   │       ├── hooks/                  # useInterstitialAd, useRewardedAd, useAppOpenAd
-│   │       ├── ui/                     # AdBanner, AdDevPanel
-│   │       ├── store/                  # ad / premium Zustand stores
-│   │       └── index.ts
-│   │
-│   ├── entities/                       # Domain models
-│   │   └── user/                       # Example: user entity
-│   │       ├── api/                    # User API
-│   │       ├── store/                  # Zustand store
-│   │       ├── types/                  # IUser
-│   │       └── index.ts                # Public API
-│   │
-│   ├── widgets/                        # Independent UI blocks
-│   │
-│   └── shared/                         # Shared code
-│       ├── api/                        # Axios client + tokenManager (SecureStore) + 401 refresh
-│       ├── config/                     # env, theme, ads (ad unit IDs)
-│       ├── lib/
-│       │   └── analytics/              # Firebase + no-op adapter (initAnalytics, logEvent)
-│       ├── store-review/               # In-app review policy engine + counters
-│       ├── types/                      # Common types
-│       └── ui/                         # UI components
-│
-├── plugins/                            # Expo config plugins
-│   ├── withLocalizedAppName.js         # Localized home-screen app name
-│   └── withLocalizedAttDescription.js  # Localized iOS ATT prompt
-├── firebase/                           # GoogleService-*.{plist,json} (gitignored)
-├── app.config.ts                       # Expo config (dynamic)
-├── tailwind.config.js                  # NativeWind/Tailwind config
-├── tsconfig.json                       # TypeScript (path aliases)
-├── eslint.config.js                    # ESLint 9 Flat Config
-├── vitest.config.mts                   # Vitest test runner config
-├── .prettierrc.js                      # Prettier rules
-├── eas.json                            # EAS Build profiles
-└── CLAUDE.md                           # Claude Code instructions
+"게임 만들어줘"               → /orchestrate
+"표적이 점점 빨라지게 해줘"     → module-builder → presentation-developer → qa-reviewer → design-review
+"다음 뭐 만들지"               → /iterate-app
 ```
 
----
+## Commands
 
-## FSD Architecture
-
-**Feature-Sliced Design**은 비즈니스 도메인별로 코드를 구성하는 아키텍처입니다.
-
-### Layer Hierarchy
-
-```
-app (routing) → widgets → features → entities → shared
-```
-
-상위 레이어는 하위 레이어만 참조할 수 있습니다. 동일 레벨 간 직접 참조는 금지합 니다.
-
-### Adding a New Feature
-
-```
-src/features/my-feature/
-├── api/
-│   ├── my-feature.api.ts       # API calls
-│   └── index.ts
-├── hooks/
-│   ├── use-my-feature.ts       # Custom hooks
-│   └── index.ts
-├── store/                      # (optional) Zustand store
-│   ├── my-feature.store.ts
-│   └── index.ts
-├── types/
-│   ├── my-feature.types.ts     # Interfaces, types
-│   └── index.ts
-├── ui/                         # (optional) Feature-specific UI
-│   ├── MyComponent.tsx
-│   └── index.ts
-└── index.ts                    # Public API (barrel export)
-```
-
-### Adding a New Entity
-
-```
-src/entities/my-entity/
-├── api/                        # Entity API
-├── store/                      # Zustand store
-├── types/                      # IMyEntity
-└── index.ts                    # Public API
-```
-
----
-
-## Path Aliases
-
-| Alias | Path |
-|-------|------|
-| `@/*` | `./src/*` |
-| `@core/*` | `./src/core/*` |
-| `@features/*` | `./src/features/*` |
-| `@entities/*` | `./src/entities/*` |
-| `@widgets/*` | `./src/widgets/*` |
-| `@shared/*` | `./src/shared/*` |
-
-```typescript
-// Example
-import { Button } from '@shared/ui';
-import { useLogin } from '@features/auth';
-import { useUserStore } from '@entities/user';
-```
-
----
-
-## Available Scripts
-
-```bash
-npm start                 # Dev server (127.0.0.1 전용)
-npm run start:lan         # Dev server (LAN, 실기기용 — 켜 둔 동안 같은 네트워크에 번들이 열림)
-npm run start:tunnel      # Dev server (tunnel)
-npm run ios               # iOS 빌드·실행 (npm start 서버 사용)
-npm run android           # Android 빌드·실행 (npm start 서버 사용)
-npm run lint              # ESLint 9 check
-npm test                  # Vitest unit tests (run once)
-npm run test:watch        # Vitest watch mode
-npm run typecheck         # TypeScript check
-npm run format            # Prettier format
-npm run verify            # typecheck + lint + test + check:harness (Stop hook 이 돌리는 명령)
-npm run check:harness     # Hard Threshold 설정 검사 (NativeWind·SafeArea·Firebase·버전 고정·Codex 사본)
-npm run app:init -- --slug <slug> --name "<Name>"  # 템플릿 → 새 앱
-npm run eas:build:prod:ios      # 로컬 프로덕션 빌드 → build-output/app.ipa
-npm run eas:build:prod:android  # 로컬 프로덕션 빌드 → build-output/app.aab
-npm run eas:build:prod:cloud    # EAS 클라우드 프로덕션 빌드 (요청 시)
-npm run eas:build:dev     # EAS 클라우드 개발 빌드 (요청 시)
-npm run eas:build:preview # EAS 클라우드 프리뷰 빌드 (요청 시)
-npm run sync:codex        # .claude/ 원본에서 Codex 하네스 사본 재생성
-```
-
----
-
-## Customization
-
-### 1. 앱 이름 및 식별자
-
-`npm run app:init` 이 아래 값을 한 번에 바꾼다. 직접 고칠 때는 `app.config.ts`에서 수정:
-
-```typescript
-name: 'MyApp',              // 앱 이름
-slug: 'my-app',             // URL slug
-scheme: 'myapp',            // Deep link scheme
-// iOS bundleIdentifier / Android package는 slug에서 자동 생성:
-// com.seungmanchoi.{slug에서 '-' 제거} — 두 스토어에서 미사용인지 확인하고,
-// 첫 업로드 이후에는 절대 바꾸지 않는다
-```
-
-### 2. 테마 색상
-
-`tailwind.config.js`에서 primary 색상 변경:
-
-```javascript
-colors: {
-  primary: {
-    500: '#your-color',
-    // ...
-  },
-},
-```
-
-`src/shared/config/theme.ts`에서 상세 테마 수정.
-
-### 3. API URL
-
-`.env` file:
-
-```
-API_URL=http://your-api-server:3000
-```
-
-### 4. EAS Build 설정
-
-```bash
-eas build:configure    # EAS 초기 설정
-```
-
-`eas.json`에서 빌드 프로필 수정.
-
----
-
-## Environment Variables
-
-앱 설정은 `app.config.ts` → `extra` → `src/shared/config/env.ts` 순으로 전달됩니다.
-
-| 변수 | 기본값 | 설명 |
-|------|--------|------|
-| `API_URL` | `http://localhost:3000/api/v1` | 백엔드 base URL |
-| `APP_ENV` | 미설정 | `development` / `preview` / `production` — EAS 프로필이 지정. 미설정이면 dev 번들은 development, release 번들은 production(로컬 fastlane 빌드). `.env`에 넣지 않는다 |
-| `DEBUG` | `false` | 디버그 플래그 |
-| `LOG_LEVEL` | `debug` | 로그 레벨 |
-| `APP_VERSION` | `1.0.0` | 앱 버전 (iOS/Android) |
-
-**Firebase 시크릿** — 절대 커밋 금지 (`firebase/`에 두고 gitignore):
-
-| 변수 | 파일 |
+| 명령 | 설명 |
 |------|------|
-| `GOOGLE_SERVICE_INFO_PLIST` | `firebase/GoogleService-Info.plist` (iOS) |
-| `GOOGLE_SERVICES_JSON` | `firebase/google-services.json` (Android) |
+| `npm run verify` | check:harness + Domain `dotnet test` (Stop hook · CI 와 같다) |
+| `npm test` | `dotnet test unity/DomainTests~` |
+| `npm run unity -- generate` | 씬 생성 + PlayerSettings 적용 |
+| `npm run unity -- render` | 화면 상태별 1080×2340 PNG (GPU 필요) |
+| `npm run unity -- test` | Unity EditMode 테스트 |
+| `npm run unity -- ios` / `ios-sim` | Xcode 프로젝트 (기기 / 시뮬레이터) |
+| `npm run unity -- android` / `apk` | AAB / 에뮬레이터용 APK |
+| `npm run app:init -- …` | 템플릿 → 새 게임 |
+| `npm run sync:codex` | `.claude` → Codex 사본 |
 
-로컬 빌드는 이 파일을 그대로 쓰고, 클라우드 빌드도 `.easignore`가 `firebase/`를 올려서 그대로 됩니다. 파일이 없는 깨끗한 체크아웃(CI 등)이나 `firebase/`를 아카이브에서 뺀 경우에만 클라우드 빌드에 file 타입 환경변수로 주입합니다 (`eas secret:*`은 deprecated):
+## Build & Deploy
 
-```bash
-eas env:create --name GOOGLE_SERVICE_INFO_PLIST --type file --value ./firebase/GoogleService-Info.plist --visibility secret --environment production --environment preview --environment development
-eas env:create --name GOOGLE_SERVICES_JSON --type file --value ./firebase/google-services.json --visibility secret --environment production --environment preview --environment development
-```
+앱 식별자는 `unity/Assets/Game/Editor/AppInfo.cs` 한 곳에 있다. fastlane 이 거기서 읽는다.
 
----
+| Lane | 하는 일 |
+|------|--------|
+| `fastlane ios create_app` | bundle id 등록, ASC 앱 레코드 확인 (레코드는 웹에서 먼저 만든다) |
+| `fastlane ios build_unity` | TestFlight 마지막 빌드 +1 → Unity BuildIOS → 수출 규정 plist → sigh → `Unity-iPhone` 수동 서명 → IPA |
+| `fastlane ios build_unity_sim` | 시뮬레이터 앱 (서명 없음) |
+| `fastlane ios upload` | TestFlight 업로드 |
+| `fastlane ios tf_status` / `invite` | 처리 상태, 내부 테스터 초대 |
+| `fastlane android build_unity build:N` | 환경변수 키스토어로 AAB |
+| `fastlane android internal` | 내부 테스트 트랙 업로드 |
 
-## Testing
+iOS 서명은 login.keychain 의 팀 공유 배포 인증서를 쓴다. 새 인증서를 만들지 않고, 비밀번호를 명령줄에 넘기지 않는다. 광고·Firebase SDK 를 넣으면 EDM4U 가 workspace 를 만들고, `build_unity` 가 그것을 알아서 빌드한다.
 
-```bash
-npm test            # Vitest, 1회 실행
-npm run test:watch  # Vitest, watch 모드
-```
+## Production Rules
 
-- 테스트 파일은 소스 옆에 `src/**/*.test.ts(x)` 형태로 위치
-- `npm run typecheck`(0 에러)와 `npm run lint`(0 에러)는 **Hard Threshold** 게이트 — `CLAUDE.md` 참고
+| 영역 | 규칙 문서 |
+|------|----------|
+| Unity 작업 방식 (생성기, 레이어, 테스트, UI 기준, 고정 버전) | [`docs/rules/unity-workflow.md`](./docs/rules/unity-workflow.md) |
+| 광고 — Google Mobile Ads Unity 11.5.0 (UMP → ATT → 초기화) | [`docs/rules/ads.md`](./docs/rules/ads.md) |
+| Analytics · Crashlytics — Firebase Unity 13.17.0 | [`docs/rules/analytics.md`](./docs/rules/analytics.md) |
+| 인앱 평점 정책 엔진 | [`docs/rules/store-review.md`](./docs/rules/store-review.md) |
+| 보안 저장 (PlayerPrefs vs Keychain/Keystore) | [`docs/rules/secure-storage.md`](./docs/rules/secure-storage.md) |
+| 빌드·배포 | [`docs/rules/build-deploy.md`](./docs/rules/build-deploy.md) |
+| 시뮬레이터 런타임 테스트 | [`docs/rules/runtime-testing.md`](./docs/rules/runtime-testing.md) |
+| 도구 (ponytail, CodeGraph, Codex) | [`docs/rules/tooling.md`](./docs/rules/tooling.md) |
+| 문제 해결 | [`docs/troubleshooting.md`](./docs/troubleshooting.md) |
 
-### 런타임 시뮬레이터 테스트 ([`sim-use`](https://github.com/lycorp-jp/sim-use))
-
-정적 코드 검수를 넘어 **iOS 시뮬레이터 / Android 에뮬레이터에서 앱을 실제로 조작해 검증**할 때는 하네스가 `sim-use` CLI를 사용한다. 접근성 트리를 압축 아웃라인으로 바꿔 **좌표가 아닌 요소 별칭(`@N`)으로** `observe → act → verify` 루프를 돈다.
-
-`app-inspector` 에이전트 / `inspect-app` 스킬은 런타임 테스트 전 **`sim-use` 설치를 확인하고 없으면 설치**한다:
-
-```bash
-if ! command -v sim-use >/dev/null 2>&1; then
-  brew tap lycorp-jp/tap && brew install lycorp-jp/tap/sim-use
-fi
-```
-
-스킬은 레포에 들어 있어(`.claude/skills/sim-use`, Codex 사본 `.agents/skills/sim-use`) `sim-use init` 은 하지 않는다. CLI 를 올린 뒤에는 `sim-use init --client claude --dest .claude/skills` 와 `npm run sync:codex` 로 스킬도 맞춘다.
-
-```bash
-sim-use ui            # 관찰 — @별칭이 붙은 요소 아웃라인
-sim-use tap @9        # 조작 — 좌표가 아닌 별칭으로 탭
-sim-use ui            # 검증 — 화면 재확인
-```
-
-- macOS 14+ / 최신 Xcode Command Line Tools 필요(CLT가 outdated면 설치 실패).
-- Android는 기기당 1회 브리지 설치 필요: `sim-use android init --device <serial>`.
-- 정본: `CLAUDE.md`의 **"시뮬레이터 런타임 테스트 (sim-use)"** 섹션.
-
----
-
-## Naming Conventions
-
-| Type | Prefix | Example |
-|------|--------|---------|
-| Interface | `I` | `IUserState` |
-| Type | `T` | `TButtonVariant` |
-| Enum | `E` | `EUserRole` |
-| Hook | `use-` | `use-login.ts` |
-| Component | PascalCase | `Button.tsx` |
-| Util | camelCase | `auth-utils.ts` |
-
----
+SDK 는 템플릿에 들어 있지 않다. 게임이 필요로 할 때 `platform-integrator` 가 규칙 문서대로 `Platform/` 에 붙인다.
 
 ## Branch Strategy
 
-이 템플릿으로 만든 앱 레포:
-
-```
-main      ← Production
-  ^
-devel     ← Development (default)
-  ^
-feature/* ← Feature branches
-```
-
-템플릿 레포 자체에는 `devel` 이 없다. `main` 에 PR 로 머지한다.
-
----
-
-## Build & Deploy Optimization
-
-### 빌드와 제출 (로컬 기본)
-
-```
-1. eas build --local        ← 이 맥에서 프로덕션 빌드 (EAS 프로젝트가 없는 앱은 fastlane)
-2. eas submit --path <파일> ← 로컬 산출물 제출
-```
-
-> 클라우드 EAS Build(`eas build`)는 요청하거나 로컬 빌드가 안 될 때만 쓴다. 절차: store-deploy 플러그인의 `store-build` / `store-submit` 스킬.
-
-### EAS 빌드 프로필 (`eas.json`)
-
-| 프로필 | 용도 |
-|--------|------|
-| `development-simulator` | iOS 시뮬레이터 개발 빌드 |
-| `development` | 실기기 개발 빌드 (dev client) |
-| `preview` | 내부 배포용 |
-| `production` | 스토어 배포용 (빌드 번호 자동 증가) |
-
-### iOS — Firebase (SPM + dynamic frameworks)
-
-RN Firebase 26은 Firebase iOS SDK를 Swift Package Manager로 가져오며, SPM은 `expo-build-properties` → `ios.useFrameworks: 'dynamic'`(템플릿 기본)이 필수다. `'static'`만 단독으로 쓰면 `pod install`이 실패한다. `patches/@react-native-firebase+crashlytics+26.4.0.patch`(`postinstall`에서 적용)가 RNFB 26.4.0 Crashlytics dSYM 단계가 모든 iOS 빌드를 실패시키는 문제를 막는다 — RN Firebase를 올리면 패치를 지운다. 상세: [`firebase/README.md`](./firebase/README.md).
-
-### .easignore 설정
-
-EAS는 프로젝트를 압축할 때 `.gitignore` **대신** `.easignore`를 쓰므로, 템플릿의 [`.easignore`](./.easignore)는 모든 시크릿 패턴(`.env*`, `*.p12`, `*.jks`, `credentials.json` 등)을 반복하고 스토어 에셋·툴링도 제외한다. `plugins/`와 `patches/`는 절대 제외하지 않는다 — 빌드 서버의 prebuild와 `postinstall`에 필요하다.
-
-### 앱 크기 최적화
-
-| 최적화 항목 | 방법 | 효과 |
-|------------|------|------|
-| **이미지 포맷** | PNG → WebP, 적정 해상도 | 에셋 50%+ 감소 |
-| **미사용 폰트** | 불필요한 `@expo-google-fonts/*` 제거 | 폰트당 0.5-2MB |
-| **미사용 패키지** | `npm ls` 확인 후 제거 | 번들 크기 감소 |
-| **Lottie 최적화** | 불필요 레이어 제거, 파일 크기 확인 | 1-5MB 가능 |
-
-### Android 프로덕션 액세스 신청 (개인 계정)
-
-Google Play **개인 계정**은 신규 앱을 프로덕션 트랙에 올리기 전, 비공개 테스트 게이트(**12명+ × 14일+**)를 충족한 뒤 **프로덕션 액세스 신청**을 통과해야 한다. 신청서는 3단계 설문(비공개 테스트 정보 / 앱 정보 / 프로덕션 준비)이며, Google 심사는 보통 7일 이내(계정 소유자 이메일로 통보)다.
-
-Phase 7에서 **api-integrator** 에이전트가 Playwright MCP로 이 설문을 작성·제출한다. 답변은 개발자의 **실제 사실 기반(날조 금지)**으로, 아래 정본 가이드를 참고해 작성한다:
-
-- 가이드: [`.claude/skills/orchestrate/references/play-production-access-application.md`](./.claude/skills/orchestrate/references/play-production-access-application.md) — 전체 질문·라디오 옵션·답변 작성 원칙·facts 체크리스트·worked example
-
-승인 후에는 이미 테스트된 비공개 테스트(alpha) 빌드를 콘솔에서 프로덕션으로 **승급**하면 된다(재빌드 불필요).
-
----
+게임 레포는 `main`(운영) ← `devel`(기본) ← `feature/*`. 템플릿 레포는 `main` 에 PR 로 머지한다.
 
 ## Inspired By
 
-- **[revfactory/harness](https://github.com/revfactory/harness)** — Agent Team & Skill Architect 메타 스킬. 에이전트 팀 구성, 파이프라인 패턴, `_workspace/` 데 이터 흐름 방식의 원천
-- **[Anthropic Harness Design](https://www.anthropic.com/engineering/harness-design-long-running-apps)** — Context Reset, Sprint 분해, Hard Threshold, 독립 Evaluator 등 장시간 에이전트 작업을 위한 공식 설계 가이드.
-- **[Feature-Sliced Design](https://feature-sliced.design/)** — 프론트엔드 아키 텍처 방법론
-
----
+- **[react-native-fsd-agent-template](https://github.com/seungmanchoi/react-native-fsd-agent-template)** — 이 하네스의 원본
+- **[revfactory/harness](https://github.com/revfactory/harness)** — 에이전트 팀·파이프라인·`_workspace/` 데이터 흐름
+- **[Anthropic Harness Design](https://www.anthropic.com/engineering/harness-design-long-running-apps)** — Context Reset, Sprint 분해, Hard Threshold, 독립 Evaluator
 
 ## License
 
-MIT
+MIT. 폰트 등 서드파티 에셋은 [`THIRD_PARTY_ASSETS.md`](./THIRD_PARTY_ASSETS.md) 를 따른다.
