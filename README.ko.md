@@ -191,4 +191,4 @@ SDK 는 템플릿에 들어 있지 않다. 게임이 필요로 할 때 `platform
 
 ## License
 
-MIT. 폰트 등 서드파티 에셋은 [`THIRD_PARTY_ASSETS.md`](./THIRD_PARTY_ASSETS.md) 를 따른다.
+[MIT](./LICENSE). 폰트 등 서드파티 에셋은 [`THIRD_PARTY_ASSETS.md`](./THIRD_PARTY_ASSETS.md) 를 따른다.
