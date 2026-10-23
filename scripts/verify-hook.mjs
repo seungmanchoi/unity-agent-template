@@ -13,7 +13,9 @@ import { fileURLToPath } from 'node:url';
 
 const MAX_BLOCKS = 3;
 const root = fileURLToPath(new URL('..', import.meta.url));
-const cacheDir = join(root, 'node_modules/.cache/verify-hook');
+const git = (...args) => execFileSync('git', args, { cwd: root, maxBuffer: 64 * 1024 * 1024 });
+// Cache inside .git so it never shows up as a change (there is no node_modules in this repo).
+const cacheDir = join(root, git('rev-parse', '--git-path', 'verify-hook').toString().trim());
 const greenFile = join(cacheDir, 'last-green');
 const failFile = join(cacheDir, 'last-fail.json');
 const readJson = (file) => {
@@ -30,9 +32,7 @@ try {
 } catch {
   // No/invalid stdin (manual run) — treat as a first stop.
 }
-if (!existsSync(join(root, 'node_modules'))) process.exit(0);
 
-const git = (...args) => execFileSync('git', args, { cwd: root, maxBuffer: 64 * 1024 * 1024 });
 const status = git('status', '--porcelain', '-z', '--untracked-files=all').toString();
 if (!status) process.exit(0);
 
@@ -72,6 +72,6 @@ const tail = `${run.stdout}\n${run.stderr}`.trim().split('\n').slice(-40).join('
 process.stdout.write(
   JSON.stringify({
     decision: 'block',
-    reason: `npm run verify failed (typecheck · lint · test · check:harness). Fix the Hard Threshold violations below, then finish. If you cannot fix them, say so in your report:\n${tail}`,
+    reason: `npm run verify failed (check:harness · Domain dotnet test). Fix the Hard Threshold violations below, then finish. If you cannot fix them, say so in your report:\n${tail}`,
   }),
 );

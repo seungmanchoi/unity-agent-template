@@ -1,4 +1,5 @@
-# Same gate the agents' Stop hook runs (scripts/verify-hook.mjs → npm run verify).
+# Same gate the agents' Stop hook runs (scripts/verify-hook.mjs → npm run verify):
+# static Unity harness checks + the engine-free Domain tests. No Unity license needed.
 name: verify
 
 on:
@@ -14,6 +15,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
-          cache: npm
-      - run: npm ci
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
       - run: npm run verify
