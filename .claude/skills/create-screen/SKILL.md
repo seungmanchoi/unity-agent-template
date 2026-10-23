@@ -1,67 +1,57 @@
 ---
 name: create-screen
-description: "Expo Router 규칙에 맞는 새 스크린을 추가하는 스킬. SafeArea·NativeWind·spec.md ux 분기(dark_mode 등)를 따른다. '스크린 추가해줘', '화면 만들어줘', '페이지 추가' 요청 시 반드시 이 스킬을 사용할 것."
+description: "코드로 만드는 uGUI 에 새 화면(상태)을 추가하는 스킬. SafeArea·기준 해상도 1080×2340·Theme 토큰·한글 폰트·터치 타깃 규칙을 따르고 Generate/RenderCheck 와 Codex 디자인 리뷰로 마무리한다. '스크린 추가해줘', '화면 만들어줘', '페이지 추가', '상태 추가', 'UI 추가' 요청 시 반드시 이 스킬을 사용할 것."
 ---
 
-# Create Screen Skill
+# Create Screen — uGUI 화면 추가
 
-Expo Router 규칙에 맞는 새 스크린을 추가하는 스킬.
-
-> 스크린 생성 전 `.claude/agents/ui-developer.md`의 Pre-Work Contract(`_workspace/spec.md` 의 `ux.*` 분기 규칙, SafeArea·테마 토큰)를 따른다.
+> 시작 전 `.claude/agents/presentation-developer.md` 를 Read 하고 따른다. 씬·프리팹·Unity YAML 을 손으로 만들지 않는다. UI 는 코드로 만든다.
 
 ## Trigger
-
-- "스크린 추가해줘", "화면 만들어줘", "페이지 추가"
-- `/create-screen {name}`
+- "스크린 추가해줘", "화면 만들어줘", "상태 추가", "설정 화면", "결과 화면"
+- `/create-screen {Name}`
 
 ## Input
-
-- `name`: 스크린 이름 (kebab-case, 예: `settings`)
-- `group`: 라우트 그룹 (예: `(tabs)`, `(auth)`, `(modal)`)
-- `layout`: 레이아웃 타입 (`stack` | `tabs` | `none`)
+- `Name`: 상태 이름(PascalCase, 예: `Settings`)
+- 들어오고 나가는 전환, 보여줄 Domain 상태
 
 ## Steps
 
-### Step 1: 라우트 구조 확인
-- `app/` 디렉토리의 기존 라우트 구조 분석
-- 지정된 group 존재 여부 확인, 없으면 생성
+### Step 1: 위치 정하기
+- 작은 화면: `GameController` 의 `State` enum 에 값을 추가하고 `Enter()`·`Render()`·`Update()` 분기에 넣는다
+- 요소가 많은 화면: `Presentation/{Name}Screen.cs` 에 빌더 클래스를 두고(`Build(RectTransform safe)`, `Show(bool)`, `Render(...)`) 컨트롤러가 소유한다
 
-### Step 2: 스크린 파일 생성
+### Step 2: 만들기 규칙
+- 모든 요소는 `SafeArea` RectTransform 아래에 둔다(배경·비네트만 예외). 새 Canvas 를 만들면 `CanvasScaler`(ScaleWithScreenSize, 1080×2340, `matchWidthOrHeight = 0`)와 `Screen.safeArea` 적용을 함께 넣는다 — 없으면 `npm run verify` 가 실패한다
+- 색·글자 크기·간격은 `Theme` 토큰만 쓴다. 폰트는 컨트롤러가 받은 Noto Sans KR
+- 터치 타깃 최소 132 기준 px(약 44pt). 탭 판정은 `RectTransformUtility.ScreenPointToLocalPointInRectangle` 로 한다
+- 입력은 Input System(`Pointer.current`, `Touchscreen.current`). 옛 `UnityEngine.Input` 금지
+- 게임 판정은 Domain 에 두고 화면은 읽기·전달만 한다
+- 상태 전환마다 `Debug.Log($"[Game] state -> {state}")`(시뮬레이터 로그로 흐름을 확인한다)
 
-#### `app/{group}/{name}.tsx`
-```typescript
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { View, Text } from 'react-native';
-
-export default function {Name}Screen() {
-  return (
-    <SafeAreaView className="flex-1 bg-background">
-      {/* 테마 토큰 사용 — bg-white 하드코딩 금지 (spec.md ux.dark_mode 준수) */}
-      <View className="flex-1 px-4">
-        {/* 본문색은 text-text-*, 브랜드색은 text-primary (tailwind.config.js에 정의된 토큰만 사용) */}
-        <Text className="text-lg font-bold text-text-primary">{Name}</Text>
-      </View>
-    </SafeAreaView>
-  );
+```csharp
+void BuildSettings(RectTransform safe)
+{
+    _settings = Rect("Settings", safe);
+    Stretch(_settings);
+    var title = Label("SettingsTitle", _settings, Theme.Title, TextAnchor.MiddleCenter);
+    Place(title.rectTransform, new Vector2(0.5f, 0.85f), Vector2.zero, new Vector2(1080, 120));
+    title.text = "설정";
 }
 ```
 
-### Step 3: 레이아웃 업데이트
-- 해당 group의 `_layout.tsx`에 새 스크린 등록
-- 탭 그룹이면 탭 아이콘 설정 포함
+### Step 3: 씬·에셋 연결 (필요할 때만)
+- 새 에셋(스프라이트·오디오·폰트) 참조나 씬 오브젝트가 필요하면 `Editor/Build.cs` 의 `Generate()` 에서 `SerializedObject` 로 연결한다. `Generate()` 는 여러 번 돌려도 같은 결과여야 한다
+- `RenderCheck` 는 `State` enum 값을 모두 찍으니 새 상태가 자동으로 포함된다. 외부 데이터가 필요한 상태면 캡처용 기본값을 준다
 
-### Step 4: 네비게이션 연결 (optional)
-- 기존 스크린에서의 이동 링크 추가
-- `expo-router`의 `Link` 또는 `router.push()` 사용
-
-### Step 5: QA 검증
-- SafeAreaView 적용 확인
-- NativeWind className 사용 확인
-- TypeScript 타입 체크
+### Step 4: 검증
+- `npm run verify`
+- `npm run unity -- generate` → `npm run unity -- render` 로 `unity/Build/render-check/{Name}.png` 확인
+- 시뮬레이터에서 `sim-use` 로 진입·이탈 흐름 확인
+- **`design-review` 스킬로 Codex 판정**
 
 ## Agent Delegation
-
 | Step | Agent |
 |------|-------|
-| 1-4 | ui-developer |
-| 5 | qa-reviewer |
+| 1-3 | presentation-developer |
+| 4 | qa-reviewer → design-review |
