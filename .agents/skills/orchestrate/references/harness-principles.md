@@ -24,7 +24,7 @@ Anthropic의 공식 하네스 설계 가이드 기반 원칙.
 - 명시적 성공 기준(Sprint Contract) 포함
 - 구현 → 평가 → 수정 루프를 스프린트 단위로 수행
 
-**적용**: Phase 4(Implementation)에서 FSD feature 단위로 스프린트 반복.
+**적용**: Phase 4(Implementation)에서 Domain 모듈·화면 상태 단위로 스프린트 반복.
 
 ## 3. Evaluator 튜닝
 
@@ -40,9 +40,9 @@ Anthropic의 공식 하네스 설계 가이드 기반 원칙.
 
 > "어떤 하나의 기준이라도 임계값 이하이면 해당 스프린트는 실패"
 
-**Hard Threshold 전체 목록은 `CLAUDE.md`의 "Hard Thresholds" 표가 정본이다** (TypeScript/ESLint/`any`/FSD 의존성/SafeArea/barrel export/날짜 키/SecureStore/평점 정책/광고 동의 시퀀스 등). 측정 방법·자동 수정 가능 여부 열은 `.claude/agents/qa-reviewer.md`의 표를 참조한다. **이 파일에 표를 중복 유지하지 않는다** (3중 드리프트 방지).
+**Hard Threshold 전체 목록은 `CLAUDE.md`의 "Hard Thresholds" 표가 정본이다** (asmdef 레이어/Domain 순수성·결정성/SDK 경계/safe area/패키지 고정/날짜 키/PlayerPrefs 비밀값/평점 정책/광고 동의 시퀀스 등). 측정 방법·자동 수정 가능 여부 열은 `.claude/agents/qa-reviewer.md`의 표를 참조한다. **이 파일에 표를 중복 유지하지 않는다** (3중 드리프트 방지).
 
-> 참고: "빈 상태(empty state) 처리 누락"은 전역 Hard Threshold가 아니라 app-inspector가 **리스트 화면 단위**로 판정하는 항목이다 (`.claude/agents/app-inspector.md`).
+> 참고: "한 판을 끝까지 할 수 있는가", "실패 이유를 읽을 수 있는가" 같은 플레이 감각은 전역 Hard Threshold 가 아니라 app-inspector 와 Codex 디자인 리뷰가 판정한다.
 
 ## 5. 디자인 Grading Criteria (4축 평가)
 
@@ -55,15 +55,15 @@ Anthropic의 공식 하네스 설계 가이드 기반 원칙.
 | **Craft** | 기술적 실행 (스페이싱, 타이포, 대비) | 25% |
 | **Functionality** | 미학과 독립적인 사용성 | 20% |
 
-> Design Quality와 Originality에 높은 가중치를 두어 "안전한 기본값" 대신 **심미적 도전**을 유도.
+> Design Quality와 Originality에 높은 가중치를 두어 "안전한 기본값" 대신 **심미적 도전**을 유도. 이 평가는 Codex 가 실제 시뮬레이터 캡처로 한다(`/design-review`, P0/P1/P2).
 
 ## 6. 능동 테스트 (Active Testing)
 
 정적 코드 분석만으로는 부족하다. **실제 앱을 탐색하며** 버그를 발견해야 한다.
 
-- 코드를 읽는 것 외에 `npm run typecheck`, `npm run lint` 실행
-- 가능하면 빌드를 수행하여 런타임 오류 확인
-- import 관계를 추적하여 순환 참조 탐지
+- 코드를 읽는 것 외에 `npm run verify`, `npm run unity -- generate`·`test` 실행 (컴파일 오류는 Unity 만 잡는다)
+- 시뮬레이터 빌드로 실제 한 판을 플레이(`sim-use`), autoplay 로 상태별 캡처
+- asmdef 참조를 추적해 레이어 역참조 탐지
 
 ## 7. Progressive Simplification
 
@@ -92,7 +92,7 @@ Anthropic의 공식 하네스 설계 가이드 기반 원칙.
 | 컴포넌트 | 가정 | 현재 모델에서 필요? |
 |---------|------|-------------------|
 | Sprint Contract | 모델이 범위를 놓침 | 단순 앱은 불필요, 복잡한 앱은 유지 |
-| Quick QA (4a-4c) | 서브스텝 간 에러 누적 | 유지 권장 (typecheck은 항상 유용) |
+| Quick QA (4a-4d) | 서브스텝 간 에러 누적 | 유지 권장 (Unity 컴파일·생성기 멱등은 항상 유용) |
 | Phase 6 Fix Loop | 한 번에 완벽 불가 | 유지 (자체 평가는 여전히 관대) |
 | Generator-Evaluator 분리 | 자체 평가 편향 | 핵심 — 제거 불가 |
 | Context Reset | 컨텍스트 저하 | 새 모델이 나올 때마다 재평가 |
