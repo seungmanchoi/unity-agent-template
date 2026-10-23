@@ -80,7 +80,7 @@ unity/Assets/Game/
 unity/DomainTests~/   dotnet test project compiling the Domain and EditMode test sources
 ```
 
-Dependencies point `Domain ← Platform ← Presentation ← Editor`; tests see Domain only. `npm run verify` checks asmdef references, Domain purity, SDK placement, safe area, version pins and files that must never be committed.
+Domain and Platform reference nothing of ours; Presentation references Domain and Platform; Editor references Domain and Presentation; tests see Domain only. `npm run verify` checks asmdef references, Domain purity, SDK placement, safe area, version pins and files that must never be committed.
 
 The sample game is "tap the target": `GameSim` moves a target at a fixed 60 Hz step and `GameController` builds a Title → Play → Result state machine with uGUI in code. Keep that shape when you replace it: a Domain that takes a seed and rules, a Presentation that draws it.
 

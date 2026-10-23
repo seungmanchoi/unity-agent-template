@@ -93,7 +93,7 @@ unity/Assets/Game/
 unity/DomainTests~/   dotnet test 프로젝트 (Domain + EditMode 테스트 소스를 컴파일)
 ```
 
-의존 방향은 `Domain ← Platform ← Presentation ← Editor`, 테스트는 Domain 만 본다. `npm run verify` 가 asmdef 참조, Domain 순수성, SDK 위치, safe area, 버전 고정, 커밋하면 안 되는 파일을 검사한다.
+Domain 과 Platform 은 게임 어셈블리를 참조하지 않는다. Presentation 은 Domain·Platform 을, Editor 는 Domain·Presentation 을 참조하고, 테스트는 Domain 만 본다. `npm run verify` 가 asmdef 참조, Domain 순수성, SDK 위치, safe area, 버전 고정, 커밋하면 안 되는 파일을 검사한다.
 
 샘플 게임은 "표적 탭"이다. `GameSim` 이 60Hz 고정 스텝으로 표적을 옮기고, `GameController` 가 Title → Play → Result 상태 머신과 uGUI 를 코드로 만든다. 실제 게임으로 바꿀 때도 이 모양(시드와 규칙을 받는 Domain, 그것을 그리는 Presentation)을 유지한다.
 
