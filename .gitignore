@@ -1,79 +1,45 @@
 node_modules/
-.expo/
-dist/
-npm-debug.*
+.DS_Store
+.env
+.env.*
+!.env.example
+
+# Signing material and store keys never enter git (~/works/common holds them)
 *.jks
 *.keystore
 *.p8
 *.p12
+*.pem
 *.key
 *.mobileprovision
-*.orig.*
-web-build/
-.env
-.env.local
-.env.development
-.env.production
-
-# macOS
-.DS_Store
-*.pem
-
-# local env files
-.env*.local
-
-# EAS local credentials (credentials.json holds signing passwords)
 credentials.json
 credentials/
 
-# Firebase config (download from Firebase Console)
+# Firebase config (download from Firebase Console into firebase/, never commit)
 firebase/GoogleService-Info.plist
 firebase/google-services.json
 
-# typescript
-*.tsbuildinfo
-expo-env.d.ts
+# Build output (Unity Xcode/Gradle projects live in unity/Build, ignored by unity/.gitignore)
+build-output/
+*.ipa
+*.aab
+*.apk
+fastlane/report.xml
 
-# Native
-ios/
-android/
-
-# Fastlane store metadata
-!fastlane/metadata/
-!fastlane/metadata/ios/
-!fastlane/metadata/ios/**
-!fastlane/metadata/android/
-!fastlane/metadata/android/**
-
-# Screenshots (keep in repo for store deployment)
+# Fastlane store metadata and screenshots stay in git
+!fastlane/metadata/**
 !screenshots/**
 
-# Playwright MCP artifacts
+# Local tool caches
 .playwright-mcp/
-
-# CodeGraph index (local code-intelligence cache — rebuild with `codegraph init -i`)
 .codegraph/
-
-# IDE
 .idea/
-
-# Debug screenshots (root level PNGs)
+.vscode/
 /*.png
 
-# Agent workspace (inter-agent data exchange)
-# Agent scratch output. Decisions the next session (or a fresh clone) needs are kept:
-# the survey answers, PRD/KPIs and the iterate backlog.
+# Agent workspace (inter-agent data exchange). Decisions the next session (or a fresh clone)
+# needs are kept: the survey answers, PRD/KPIs and the iterate backlog.
 _workspace/*
 !_workspace/spec.md
 !_workspace/plan/
 !_workspace/iterate/
-
-# Build artifacts
-*.aab
-*.ipa
-
-# Fastlane generated reports
-fastlane/report.xml
-
-# Build output
-build-output/
