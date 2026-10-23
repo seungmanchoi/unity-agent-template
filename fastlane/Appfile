@@ -1,0 +1,10 @@
+# App identity comes from unity/Assets/Game/Editor/AppInfo.cs (npm run app:init rewrites it).
+app_info = File.read(File.expand_path("../unity/Assets/Game/Editor/AppInfo.cs", __dir__))
+bundle_id = app_info[/const string BundleId = "([^"]+)"/, 1]
+
+app_identifier(bundle_id)
+apple_id("blue_eng@hanmail.net")
+itc_team_id("117885592")
+team_id("6Y6T9LPHH3")
+json_key_file("/Users/seungmanchoi/works/common/works-488915-4f58ab8044c4.json")
+package_name(bundle_id)

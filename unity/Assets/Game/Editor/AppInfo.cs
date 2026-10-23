@@ -2,7 +2,7 @@ namespace Game.Editor
 {
     /// <summary>
     /// App identity — the single source. `npm run app:init` rewrites these lines; fastlane/Fastfile and
-    /// fastlane/Appfile read them with a regex, so keep each on one line as `Name = "value";`.
+    /// fastlane/Appfile read them with a regex, so keep each as one line `public const string Key = "value";`.
     /// </summary>
     public static class AppInfo
     {

@@ -1,0 +1,176 @@
+default_platform(:ios)
+
+# Unity 빌드 어댑터: Unity batchmode 가 Xcode 프로젝트를 만들고(unity/Build/ios), 여기서 서명·IPA·업로드한다.
+# login.keychain 의 팀 공유 배포 인증서(Apple Distribution: SeungMan Choi, 6Y6T9LPHH3)로 서명한다.
+# 새 인증서·전용 키체인을 만들지 않고, 비밀번호를 명령줄에 넘기지 않는다(~/works/CLAUDE.md "iOS 배포 인증서").
+ROOT         = File.expand_path("..", __dir__)
+APP_INFO     = File.read("#{ROOT}/unity/Assets/Game/Editor/AppInfo.cs")
+APP_ID       = APP_INFO[/const string BundleId = "([^"]+)"/, 1]
+APP_NAME     = APP_INFO[/const string Name = "([^"]+)"/, 1]
+APP_SLUG     = APP_INFO[/const string Slug = "([^"]+)"/, 1]
+APP_VERSION  = APP_INFO[/const string Version = "([^"]+)"/, 1]
+# Build.cs 의 namespace 를 따라간다(app:init --namespace 가 바꾼다).
+UNITY_NS     = APP_INFO[/namespace (\w+)\.Editor/, 1]
+UNITY        = ENV["UNITY_PATH"] || "/Applications/Unity/Hub/Editor/6000.3.26f1/Unity.app/Contents/MacOS/Unity"
+TEAM_ID      = "6Y6T9LPHH3"
+ASC_KEY_ID   = "6FD6879KFW"
+ASC_ISSUER   = "69a6de87-13e2-47e3-e053-5b8c7c11a4d1"
+ASC_KEY_PATH = "/Users/seungmanchoi/works/common/AuthKey_6FD6879KFW.p8"
+IPA_PATH     = "#{ROOT}/build-output/#{APP_SLUG}.ipa"
+# 여러 세션이 동시에 빌드해 부하가 높으면 gym 의 `xcodebuild -showBuildSettings` 가 기본 3초 제한에 걸린다.
+ENV["FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT"] ||= "120"
+
+def asc_key
+  app_store_connect_api_key(key_id: ASC_KEY_ID, issuer_id: ASC_ISSUER, key_filepath: ASC_KEY_PATH)
+end
+
+def connect_token
+  require 'spaceship'
+  Spaceship::ConnectAPI.token = Spaceship::ConnectAPI::Token.create(
+    key_id: ASC_KEY_ID, issuer_id: ASC_ISSUER, filepath: ASC_KEY_PATH
+  )
+end
+
+# Developer Portal 에 bundle ID 등록 (API 키, 2FA 불필요). 이미 있으면 skip.
+def ensure_bundle_id
+  connect_token
+  if Spaceship::ConnectAPI::BundleId.all.any? { |b| b.identifier == APP_ID }
+    UI.message("Bundle ID #{APP_ID} already registered.")
+  else
+    Spaceship::ConnectAPI::BundleId.create(name: APP_NAME, identifier: APP_ID, platform: "IOS")
+    UI.success("Registered bundle ID #{APP_ID} on Developer Portal.")
+  end
+end
+
+# Unity batchmode 실행. fastlane sh 는 env 인자를 받지 않으니 프로세스 환경으로 넘긴다.
+def unity(method, log)
+  FileUtils.mkdir_p("#{ROOT}/build-output")
+  sh(UNITY, "-batchmode", "-quit", "-projectPath", "#{ROOT}/unity",
+     "-executeMethod", "#{UNITY_NS}.Editor.Build.#{method}", "-logFile", "#{ROOT}/build-output/#{log}")
+end
+
+platform :ios do
+  # ASC API 는 apps CREATE 를 허용하지 않는다(2026-10 확인) — 첫 레코드는 ASC 웹에서 만든다.
+  desc "Register bundle ID + check the ASC app record (create the record on the web first)"
+  lane :create_app do
+    asc_key
+    ensure_bundle_id
+    app = Spaceship::ConnectAPI::App.find(APP_ID)
+    UI.user_error!("ASC 앱 레코드가 없다: ASC 웹에서 '#{APP_NAME}'(#{APP_ID}, SKU #{APP_ID}, 기본 언어 en-US)을 먼저 만든다") unless app
+    UI.message("ASC app exists: '#{app.name}' id=#{app.id}")
+  end
+
+  desc "Unity → Xcode → signed App Store .ipa (build-output/<slug>.ipa)"
+  lane :build_unity do
+    asc_key
+    ensure_bundle_id
+    # ASC 는 같은 버전 안에서 build number 재사용을 거부한다 — 마지막 업로드 +1 (이력 없으면 1).
+    next_build = (latest_testflight_build_number(
+      app_identifier: APP_ID, team_id: TEAM_ID, initial_build_number: 0
+    ) + 1).to_s
+    UI.message("Build number -> #{next_build}")
+    ENV["APP_VERSION"] = APP_VERSION
+    ENV["BUILD_NUMBER"] = next_build
+    ENV.delete("IOS_SIMULATOR")
+    unity("BuildIOS", "unity-ios.log")
+
+    xcproj = "#{ROOT}/unity/Build/ios/Unity-iPhone.xcodeproj"
+    # 표준 암호화만 쓴다 — 업로드마다 수출 규정 질문을 받지 않게 한다.
+    update_info_plist(xcodeproj: xcproj, plist_path: "Info.plist",
+                      block: proc { |p| p["ITSAppUsesNonExemptEncryption"] = false })
+    profile = sigh(app_identifier: APP_ID, force: true, output_path: "#{ROOT}/build-output/profiles")
+    # 수동 서명은 앱 타깃(Unity-iPhone)에만 건다. UnityFramework 등 다른 타깃에 걸면
+    # "does not support provisioning profiles" 로 실패한다.
+    update_code_signing_settings(
+      use_automatic_signing: false, path: xcproj, team_id: TEAM_ID,
+      code_sign_identity: "Apple Distribution", profile_name: profile, targets: ["Unity-iPhone"]
+    )
+    build_app(
+      project: xcproj, scheme: "Unity-iPhone", configuration: "Release", export_method: "app-store",
+      output_directory: "#{ROOT}/build-output", output_name: "#{APP_SLUG}.ipa", clean: true,
+      export_options: { signingStyle: "manual", teamID: TEAM_ID, provisioningProfiles: { APP_ID => profile } }
+    )
+  end
+
+  desc "Unity simulator build (unity/Build/ios-sim) for sim-use checks — no signing"
+  lane :build_unity_sim do
+    ENV["IOS_SIMULATOR"] = "1"
+    unity("BuildIOS", "unity-ios-sim.log")
+    ENV.delete("IOS_SIMULATOR")
+    # 결과: build-output/sim-derived/Build/Products/Debug-iphonesimulator/*.app → simctl install
+    sh("xcodebuild", "-project", "#{ROOT}/unity/Build/ios-sim/Unity-iPhone.xcodeproj", "-scheme", "Unity-iPhone",
+       "-configuration", "Debug", "-sdk", "iphonesimulator", "-derivedDataPath", "#{ROOT}/build-output/sim-derived",
+       "CODE_SIGNING_ALLOWED=NO", "build")
+  end
+
+  desc "Upload build-output/<slug>.ipa to TestFlight (no review submission)"
+  lane :upload do
+    asc_key
+    upload_to_testflight(
+      ipa: IPA_PATH, app_identifier: APP_ID, team_id: TEAM_ID,
+      skip_waiting_for_build_processing: true, skip_submission: true
+    )
+  end
+
+  desc "Print latest builds' processing state + beta groups"
+  lane :tf_status do
+    connect_token
+    app = Spaceship::ConnectAPI::App.find(APP_ID)
+    UI.header("Builds")
+    Spaceship::ConnectAPI::Build.all(app_id: app.id, sort: "-version", limit: 5).each do |b|
+      UI.message("build #{b.version} | processing=#{b.processing_state} | expired=#{b.expired}")
+    end
+    UI.header("Beta groups")
+    app.get_beta_groups.each { |g| UI.message("group='#{g.name}' internal=#{g.is_internal_group} id=#{g.id}") }
+  end
+
+  # 내부 테스터는 처리된 빌드를 모두 자동으로 받는다(빌드마다 따로 켤 필요 없음).
+  desc "Invite an internal TestFlight tester (email:) — defaults to the account owner"
+  lane :invite do |options|
+    connect_token
+    email = options[:email] || "blue_eng@hanmail.net"
+    app = Spaceship::ConnectAPI::App.find(APP_ID)
+    group = app.get_beta_groups.find(&:is_internal_group)
+    if group.nil?
+      # spaceship 의 create_beta_group 은 내부 그룹이 거부하는 publicLink* 속성을 보낸다 — 직접 POST 한다.
+      Spaceship::ConnectAPI.test_flight_request_client.post("v1/betaGroups", {
+        data: {
+          attributes: { name: "Internal", isInternalGroup: true, hasAccessToAllBuilds: true },
+          relationships: { app: { data: { id: app.id, type: "apps" } } },
+          type: "betaGroups"
+        }
+      })
+      group = app.get_beta_groups.find(&:is_internal_group)
+    end
+    Spaceship::ConnectAPI.post_beta_tester_assignment(
+      beta_group_ids: [group.id], attributes: { email: email, firstName: "Seungman", lastName: "Choi" }
+    )
+    UI.success("Invited #{email} to internal group '#{group.name}'")
+  end
+end
+
+platform :android do
+  PLAY_KEY = "/Users/seungmanchoi/works/common/works-488915-4f58ab8044c4.json"
+  AAB_PATH = "#{ROOT}/unity/Build/android/#{APP_SLUG}.aab"
+
+  # 업로드 키스토어 경로·비밀번호는 환경변수로만 받는다(ANDROID_KEYSTORE, ANDROID_KEY_ALIAS,
+  # ANDROID_KEYSTORE_PASS, ANDROID_KEY_PASS). 레포·명령줄 인자에 두지 않는다.
+  desc "Unity → signed AAB (unity/Build/android/<slug>.aab); version code = build:"
+  lane :build_unity do |options|
+    UI.user_error!("ANDROID_KEYSTORE 환경변수가 없다") unless ENV["ANDROID_KEYSTORE"]
+    ENV["APP_VERSION"] = APP_VERSION
+    ENV["BUILD_NUMBER"] = (options[:build] || 1).to_s
+    ENV.delete("ANDROID_APK")
+    unity("BuildAndroid", "unity-android.log")
+  end
+
+  # 신규 앱의 첫 AAB 는 Play Developer API 가 draft 앱에서 거부한다 → Play Console 웹에서 수동 업로드.
+  desc "Upload AAB to the internal testing track (draft)"
+  lane :internal do |options|
+    upload_to_play_store(
+      track: "internal", release_status: "draft", aab: options[:aab] || AAB_PATH,
+      skip_upload_apk: true, skip_upload_metadata: true, skip_upload_images: true, skip_upload_screenshots: true,
+      json_key: PLAY_KEY, package_name: APP_ID
+    )
+  end
+end
