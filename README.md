@@ -64,7 +64,20 @@ A Unity mobile game template where Claude Code and Codex take a game from idea t
 
 ## Skills
 
-`init-app`, `ideate`, `plan-app`, `design-system`, `design-review`, `create-module`, `create-screen`, `inspect-app`, `orchestrate`, `iterate-app`, `sim-use`. Store deployment comes from the [`store-deploy`](https://github.com/seungmanchoi/store-deploy-plugin) plugin (`/store-deploy`), registered in `.claude/settings.json`.
+| Skill | What it does |
+|-------|--------------|
+| `init-app` | Replace slug, name, bundle id and namespace |
+| `ideate` / `plan-app` | Ideas, PRD |
+| `design-system` | Palette, type and spacing tokens, layouts |
+| `design-review` | Simulator captures → Codex four-axis review → fix → re-review |
+| `create-module` | A Domain module with tests |
+| `create-screen` | Add a uGUI screen or state |
+| `inspect-app` | Full simulator inspection |
+| `orchestrate` | The whole pipeline |
+| `iterate-app` | Post-launch iteration loop |
+| `sim-use` | Drive simulators and emulators |
+
+Store deployment comes from the [`store-deploy`](https://github.com/seungmanchoi/store-deploy-plugin) plugin (`/store-deploy`), registered in `.claude/settings.json`.
 
 ## Architecture
 
@@ -80,7 +93,7 @@ unity/Assets/Game/
 unity/DomainTests~/   dotnet test project compiling the Domain and EditMode test sources
 ```
 
-Dependencies point `Domain ← Platform ← Presentation ← Editor`; tests see Domain only. `npm run verify` checks asmdef references, Domain purity, SDK placement, safe area, version pins and files that must never be committed.
+Domain and Platform reference nothing of ours; Presentation references Domain and Platform; Editor references Domain and Presentation; tests see Domain only. `npm run verify` checks asmdef references, Domain purity, SDK placement, safe area, version pins and files that must never be committed.
 
 The sample game is "tap the target": `GameSim` moves a target at a fixed 60 Hz step and `GameController` builds a Title → Play → Result state machine with uGUI in code. Keep that shape when you replace it: a Domain that takes a seed and rules, a Presentation that draws it.
 
@@ -104,6 +117,14 @@ The sample game is "tap the target": `GameSim` moves a target at a fixed 60 Hz s
    npm run unity -- test          # Unity EditMode tests
    npm run unity -- render        # unity/Build/render-check/*.png
    fastlane ios build_unity_sim   # simulator app → xcrun simctl install booted <app>
+   ```
+
+4. Use the harness:
+
+   ```
+   "Make a game"                       → /orchestrate
+   "Make the target speed up over time" → module-builder → presentation-developer → qa-reviewer → design-review
+   "What next?"                        → /iterate-app
    ```
 
 ## Commands
@@ -138,7 +159,23 @@ iOS signing uses the team distribution certificate already in the login keychain
 
 ## Production Rules
 
-Unity workflow, ads (Google Mobile Ads Unity 11.5.0), analytics (Firebase Unity 13.17.0), store review, secure storage, build/deploy, runtime testing and tooling each have a rules doc under [`docs/rules/`](./docs/rules/); see also [`docs/troubleshooting.md`](./docs/troubleshooting.md). SDKs are not bundled — `platform-integrator` adds them under `Platform/` when a game needs them.
+| Area | Rules doc |
+|------|-----------|
+| Unity workflow (generators, layers, tests, UI baseline, pinned versions) | [`docs/rules/unity-workflow.md`](./docs/rules/unity-workflow.md) |
+| Ads — Google Mobile Ads Unity 11.5.0 (UMP → ATT → initialize) | [`docs/rules/ads.md`](./docs/rules/ads.md) |
+| Analytics · Crashlytics — Firebase Unity 13.17.0 | [`docs/rules/analytics.md`](./docs/rules/analytics.md) |
+| In-app review policy engine | [`docs/rules/store-review.md`](./docs/rules/store-review.md) |
+| Secure storage (PlayerPrefs vs Keychain/Keystore) | [`docs/rules/secure-storage.md`](./docs/rules/secure-storage.md) |
+| Build and deploy | [`docs/rules/build-deploy.md`](./docs/rules/build-deploy.md) |
+| Simulator runtime testing | [`docs/rules/runtime-testing.md`](./docs/rules/runtime-testing.md) |
+| Tooling (ponytail, CodeGraph, Codex) | [`docs/rules/tooling.md`](./docs/rules/tooling.md) |
+| Troubleshooting | [`docs/troubleshooting.md`](./docs/troubleshooting.md) |
+
+SDKs are not bundled — `platform-integrator` adds them under `Platform/` following these docs when a game needs them.
+
+## Branch Strategy
+
+Game repos use `main` (production) ← `devel` (default) ← `feature/*`. This template repo merges into `main` through pull requests.
 
 ## Inspired By
 
@@ -148,4 +185,4 @@ Unity workflow, ads (Google Mobile Ads Unity 11.5.0), analytics (Firebase Unity 
 
 ## License
 
-MIT. Third-party assets such as fonts follow [`THIRD_PARTY_ASSETS.md`](./THIRD_PARTY_ASSETS.md).
+[MIT](./LICENSE). Third-party assets such as fonts follow [`THIRD_PARTY_ASSETS.md`](./THIRD_PARTY_ASSETS.md).
