@@ -1,8 +1,4 @@
 <p align="center">
-  <img src="./docs/images/hero.webp" alt="Unity Agent Template" width="100%" />
-</p>
-
-<p align="center">
   <img src="https://img.shields.io/badge/Unity-6000.3.26f1-000000?style=for-the-badge&logo=unity&logoColor=white" />
   <img src="https://img.shields.io/badge/C%23-9-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" />
   <img src="https://img.shields.io/badge/Input_System-1.20.0-222222?style=for-the-badge&logo=unity&logoColor=white" />
@@ -21,6 +17,10 @@
   <img src="https://img.shields.io/badge/tests-dotnet%20test%20%7C%20Unity%20EditMode-6E9F18?style=flat-square" />
   <img src="https://img.shields.io/badge/deploy-fastlane-00F200?style=flat-square&logo=fastlane&logoColor=black" />
   <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" />
+</p>
+
+<p align="center">
+  <img src="./docs/images/hero.webp" alt="Unity Agent Template" width="100%" />
 </p>
 
 [English](./README.md) | **한국어**
