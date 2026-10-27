@@ -1,4 +1,8 @@
 <p align="center">
+  <img src="./docs/images/hero.webp" alt="Unity Agent Template" width="100%" />
+</p>
+
+<p align="center">
   <img src="https://img.shields.io/badge/Unity-6000.3.26f1-000000?style=for-the-badge&logo=unity&logoColor=white" />
   <img src="https://img.shields.io/badge/C%23-9-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" />
   <img src="https://img.shields.io/badge/Input_System-1.20.0-222222?style=for-the-badge&logo=unity&logoColor=white" />
