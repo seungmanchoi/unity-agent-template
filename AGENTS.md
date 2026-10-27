@@ -9,7 +9,7 @@ If `~/works/AGENTS.md` exists (the maintainer's personal-app rules: store deploy
 Unity mobile game template with an AI agent harness for the full lifecycle (idea → plan → spec → design → build → QA → deploy → iterate).
 
 - Unity **6000.3.26f1** (Personal) · Input System **1.20.0** (Active Input Handling = Input System) · Test Framework **1.6.0** · uGUI **2.0.0** — all pinned
-- Code-built uGUI (CanvasScaler 1080×2340 width-matched, safe area, Noto Sans KR) · IL2CPP ARM64 · portrait
+- Code-built uGUI (CanvasScaler 1080×2340 Expand, safe area, Noto Sans KR) · IL2CPP ARM64 · portrait
 - Domain tests through `dotnet test` (net10.0, C# 9, NUnit) without a Unity license; Unity EditMode tests through `-runTests`
 - Optional SDKs, added only in `Platform/`: Google Mobile Ads Unity 11.5.0 (UMP) · Firebase Unity 13.17.0 (Analytics + Crashlytics)
 - Deploy: Unity batchmode → Xcode/Gradle → fastlane (`build_unity` → `upload`) through the store-deploy plugin

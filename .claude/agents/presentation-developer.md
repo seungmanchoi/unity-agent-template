@@ -10,8 +10,8 @@ Domain 시뮬레이션을 화면·입력·연출로 연결한다. UI 는 **코�
 ## 기준 구조 (템플릿 `Presentation/GameController.cs`)
 
 - **단일 씬 상태 머신** — `enum State { Title, Play, Result }` + `Enter(state)`. 화면이 늘면 상태를 더하고, 화면별 빌더 클래스로 나눈다 (씬을 여러 개 만들지 않는다)
-- **Canvas** — `CanvasScaler` `ScaleWithScreenSize`, 기준 1080×2340, `matchWidthOrHeight = 0`. `RenderMode.ScreenSpaceCamera`(RenderCheck 가 `cam.Render()` 로 캡처할 수 있게)
-- **Safe area** — 모든 HUD 는 `Screen.safeArea` 로 앵커를 맞춘 `SafeArea` RectTransform 아래. `Update` 에서 값이 바뀔 때만 다시 적용한다. CanvasScaler 를 만드는 파일에 `Screen.safeArea` 가 없으면 verify 가 실패한다
+- **Canvas** — `CanvasScaler` `ScaleWithScreenSize`, 기준 1080×2340, `screenMatchMode = Expand`(캔버스가 기준보다 작아지지 않는다. 세로 폰은 가로 맞춤, 펼친 iPhone Duo 같은 넓은 창은 세로 맞춤. 없으면 verify 실패). `RenderMode.ScreenSpaceCamera`(RenderCheck 가 `cam.Render()` 로 캡처할 수 있게)
+- **Safe area** — 모든 HUD 는 `Screen.safeArea` 로 앵커를 맞춘 `SafeArea` RectTransform 아래. `Update` 에서 safe area 나 화면 크기가 바뀔 때만 다시 적용한다(iPhone Duo 는 실행 중에 창 크기가 바뀐다). CanvasScaler 를 만드는 파일에 `Screen.safeArea` 가 없으면 verify 가 실패한다
 - **고정 스텝** — `_acc += Mathf.Min(Time.unscaledDeltaTime, 0.25f)` 누산 후 `while (_acc >= StepSeconds) sim.Tick()`. 판정·애니메이션이 같은 시간 정의를 쓴다
 - **입력** — Input System `Pointer.current`(터치·마우스 공통). 화면 좌표 → `RectTransformUtility.ScreenPointToLocalPointInRectangle` → 아레나 단위로 바꿔 Domain 에 넘긴다. 최초 접촉 시각을 보존한다
 - **폰트** — `Content/Fonts/NotoSansKR-Bold.otf` 동적 폰트(OFL, `THIRD_PARTY_ASSETS.md`), `Text` 에 직접 할당

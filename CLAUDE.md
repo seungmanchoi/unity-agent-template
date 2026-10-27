@@ -10,7 +10,7 @@ Unity 모바일 게임 템플릿. **AI Agent Harness**(에이전트 10개 · 스
 
 - **Engine**: Unity **6000.3.26f1** (Personal 라이선스 — Unity 스플래시가 나온다), iOS · Android, IL2CPP ARM64, 세로 고정
 - **Packages (고정)**: Input System **1.20.0** (Active Input Handling = Input System) · Test Framework **1.6.0** · uGUI **2.0.0**
-- **UI**: 코드로 만드는 uGUI. CanvasScaler 기준 1080×2340 가로 맞춤, safe area RectTransform, Noto Sans KR 동적 폰트(OFL)
+- **UI**: 코드로 만드는 uGUI. CanvasScaler 기준 1080×2340 Expand(세로 폰은 가로 맞춤, 펼친 iPhone Duo 같은 넓은 창은 세로 맞춤), safe area RectTransform, Noto Sans KR 동적 폰트(OFL)
 - **Tests**: Domain 은 `dotnet test`(net10.0 · C# 9 · NUnit, Unity 라이선스 불필요), Unity EditMode 는 `-runTests`
 - **Build/Deploy**: Unity batchmode → Xcode/Gradle → fastlane (`build_unity` → `upload`), `/store-deploy` 플러그인
 - **SDK (필요할 때 Platform 에 추가)**: Google Mobile Ads Unity 11.5.0 (UMP 포함) · Firebase Unity 13.17.0 (Analytics · Crashlytics)

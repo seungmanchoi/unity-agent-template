@@ -60,7 +60,7 @@ fastlane ios upload → TestFlight (심사 제출 안 함)
 |------|------|
 | 개인정보처리방침·지원 URL | `https://seungmanchoi.github.io/{slug}/privacy.html` (en/ko/ja/zh) |
 | 아이콘 | iOS 1024 알파 없음, Android 512 + adaptive |
-| 스크린샷 | 시뮬레이터 autoplay 캡처 → `store-screenshots` |
+| 스크린샷 | 언어별 한 세트. 시뮬레이터 autoplay 캡처 → `store-screenshots`. iOS: iPhone 6.9" 1320×2868, iPhone Duo outer 1398×2034·inner 2007×2853(2027-04 부터 iOS 27.1 SDK 이상 바이너리에 필수). 규격·캡처·업로드 정본: store-deploy 플러그인 `store-screenshots` 스킬 |
 | 릴리스 노트 | Android changelog 언어별 500자 이하. iOS 도 같은 글을 쓰니 500자 기준 |
 | 버전 | `AppInfo.Version` 이 스토어 최신보다 높아야 한다 |
 | 앱 크기 | 미사용 에셋·폰트 제거, 텍스처 압축(ASTC), 오디오 Vorbis/ADPCM, Managed Stripping Level 확인 |
