@@ -28,6 +28,7 @@ namespace Game.Presentation
         float _acc, _nextAutoTap;
         bool _autoplay, _built;
         Rect _lastSafe;
+        Vector2Int _lastScreen;
         RectTransform _safe, _arena, _target;
         Text _title, _hint, _hud;
 
@@ -55,7 +56,9 @@ namespace Game.Presentation
             var scaler = canvasGo.GetComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(RefW, RefH);
-            scaler.matchWidthOrHeight = 0f; // width-matched: tall phones get more vertical room
+            // Expand: the canvas is never smaller than 1080×2340 — tall phones get more height, wide windows
+            // (iPhone Duo unfolded) more width, and nothing laid out for the reference size is clipped.
+            scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
 
             _safe = Rect("SafeArea", canvasGo.transform);
             Stretch(_safe);
@@ -155,9 +158,12 @@ namespace Game.Presentation
 
         void ApplySafeArea()
         {
+            // The window resizes at runtime (iPhone Duo fold/unfold), so the screen size is part of the key.
             var safe = Screen.safeArea;
-            if (safe == _lastSafe || Screen.width == 0 || Screen.height == 0) return;
+            var screen = new Vector2Int(Screen.width, Screen.height);
+            if ((safe == _lastSafe && screen == _lastScreen) || screen.x == 0 || screen.y == 0) return;
             _lastSafe = safe;
+            _lastScreen = screen;
             _safe.anchorMin = new Vector2(safe.xMin / Screen.width, safe.yMin / Screen.height);
             _safe.anchorMax = new Vector2(safe.xMax / Screen.width, safe.yMax / Screen.height);
             _safe.offsetMin = _safe.offsetMax = Vector2.zero;

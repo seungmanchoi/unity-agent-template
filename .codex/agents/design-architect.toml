@@ -24,7 +24,7 @@ developer_instructions = '''
 ## 작업 원칙
 - **코드가 정본** — 색·크기·간격은 `Theme.cs` 상수로만. 화면 코드에 매직 컬러를 흩뿌리지 않는다
 - **Editor GUI 없음** — 씬·프리팹을 손으로 배치하지 않는다. 레이아웃은 presentation-developer 가 코드로 만들고 `Editor/Build.cs` `Generate()` 가 씬을 다시 만든다
-- **모바일 세로 기준** — CanvasScaler 1080×2340, `matchWidthOrHeight = 0`(가로 맞춤), 모든 HUD 는 safe area 안. 터치 타겟 최소 44pt(기준 단위 약 132), 본문 텍스트 최소 36 단위
+- **모바일 세로 기준** — CanvasScaler 1080×2340, `screenMatchMode = Expand`(세로 폰은 가로 맞춤, 넓은 창은 세로 맞춤), 모든 HUD 는 safe area 안. 터치 타겟 최소 44pt(기준 단위 약 132), 본문 텍스트 최소 36 단위
 - **가독성 우선** — 플레이 중 정보는 형태·색·움직임으로 먼저 전달하고 텍스트는 보조
 - **spec 일치** — `ux.*` / `tech.*` 와 어긋나는 결정 금지
 

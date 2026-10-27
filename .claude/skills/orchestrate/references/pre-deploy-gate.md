@@ -39,6 +39,7 @@
 | 권한 | 쓰는 권한만 선언(진동은 Android VIBRATE 만). 안 쓰는 권한 설명 문구 없음 | 후처리·manifest 정리 |
 | app-ads.txt | 광고 앱이면 게시 + 스토어 리스팅 도메인 연결 | `store-admob` |
 | IAP 상품 | IAP 앱이면 ASC·Play 에 상품 생성·승인 | 콘솔 등록 |
+| iPhone Duo 스크린샷 (제출 직전) | 2027-04 이후 iOS 제출이고 바이너리가 iOS 27.1 SDK(Xcode 27.1) 이상으로 빌드됐으면, 제출할 빌드와 같은 커밋·설정으로 Duo 시뮬레이터에서 캡처한 outer·inner 스크린샷이 언어별로 있고 ASC 에 올라감. `--duo` letterbox 대체본은 준비용이라 통과가 아니다. 빌드 전에는 Duo 시뮬레이터(Xcode 27.1+)를 쓸 수 있는지만 본다 | iOS 제출 보류, `store-screenshots` Step 2d 로 네이티브 캡처 |
 | 시크릿 | `GoogleService-Info.plist`·`google-services.json`·키스토어·`.p12`·`.p8` 커밋 0건 (check-harness 가 본다) | 커밋에서 제거 후 키 교체 검토 |
 
 ## 진행 순서 (모두 통과한 뒤)

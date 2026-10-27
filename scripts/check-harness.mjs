@@ -110,11 +110,15 @@ const SDK = /\busing\s+(GoogleMobileAds|Firebase|Google\.Play|UnityEngine\.Purch
 for (const f of cs.filter((f) => !inLayer('Platform')(f) && !inLayer('Editor')(f)))
   expect(!SDK.test(code(read(f))), `${f}: SDK / native calls belong in ${game}/Platform`);
 
-// Every code-built canvas follows the safe area.
+// Every code-built canvas follows the safe area and never shrinks below the reference size.
 for (const f of cs.filter(inLayer('Presentation'))) {
   const src = code(read(f));
   if (/AddComponent<CanvasScaler>|typeof\(CanvasScaler\)/.test(src))
+  {
     expect(/Screen\.safeArea/.test(src), `${f}: builds a Canvas but never applies Screen.safeArea`);
+    // Width-match alone clips the bottom on wide windows (iPhone Duo unfolded).
+    expect(/ScreenMatchMode\.Expand/.test(src), `${f}: CanvasScaler must use ScreenMatchMode.Expand`);
+  }
 }
 
 // Local calendar days come from local time; UTC is for stored timestamps only.

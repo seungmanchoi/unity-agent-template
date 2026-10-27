@@ -121,7 +121,7 @@ PRD 를 `docs/specs/<NN-feature>/` 로 나누고 phase/task 체크박스로 분�
 
 ### Phase 3: Design — `design-architect` (`/design-system`) + Codex
 
-디자인 결정은 Codex 가 맡는다(`/design-review`). design-architect 는 방향 시안(팔레트·타이포·모션·타격감 원칙·화면 레이아웃)을 `_workspace/design/` 에 쓰고, 코드 토큰(`Presentation` 의 색·크기 상수)으로 옮긴다. 레퍼런스 해상도 1080×2340, 가로 맞춤, 모든 HUD 는 SafeArea 안.
+디자인 결정은 Codex 가 맡는다(`/design-review`). design-architect 는 방향 시안(팔레트·타이포·모션·타격감 원칙·화면 레이아웃)을 `_workspace/design/` 에 쓰고, 코드 토큰(`Presentation` 의 색·크기 상수)으로 옮긴다. 레퍼런스 해상도 1080×2340, Expand, 모든 HUD 는 SafeArea 안.
 
 - 첫 화면이 그려지는 즉시 `npm run unity -- render` 로 1080×2340 PNG 를 만들어 Codex 에 방향 확인을 받는다(시뮬레이터 캡처가 정본, RenderCheck 는 빠른 초안용).
 - 선택은 `execution.design_selection`.
@@ -138,7 +138,7 @@ PRD 를 `docs/specs/<NN-feature>/` 로 나누고 phase/task 체크박스로 분�
 
 #### 4b. Presentation — `presentation-developer` (`/create-screen`)
 
-- 화면은 단일 씬 상태 머신(Title → Play → Result …) 안의 상태로 추가한다. uGUI 는 코드로 만든다: `CanvasScaler` 1080×2340 `matchWidthOrHeight = 0`, `Screen.safeArea` 를 따르는 SafeArea RectTransform, Noto Sans KR
+- 화면은 단일 씬 상태 머신(Title → Play → Result …) 안의 상태로 추가한다. uGUI 는 코드로 만든다: `CanvasScaler` 1080×2340 `screenMatchMode = Expand`, `Screen.safeArea` 를 따르는 SafeArea RectTransform, Noto Sans KR
 - 입력은 Input System(`Pointer.current` 등), Domain 은 고정 스텝 누산기로 돌린다
 - 씬·에셋 참조 배선은 `Editor/Build.cs` `Generate()` 에서 `SerializedObject` 로. 씬 YAML·`.meta` 를 손으로 고치지 않는다
 - 캡처·성능용 autoplay 경로(`PlayerPrefs autoplay`)를 새 상태에도 이어 준다

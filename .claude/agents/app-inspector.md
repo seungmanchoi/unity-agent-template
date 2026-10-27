@@ -38,7 +38,8 @@ xcrun simctl launch --console-pty booted "$BUNDLE"   # Unity 로그([Game] ...) 
 1. **observe → act → verify** — `sim-use ui` 로 관찰, `tap @N`/`swipe` 로 조작, 다시 `sim-use ui` 로 확인. uGUI 텍스트가 접근성 트리에 안 보이면 `sim-use screenshot` 으로 판정하고 탭은 `sim-use tap -x <X> -y <Y>`(sim-use 의 최후 수단 좌표 탭)로 한다
 2. **Autoplay 캡처** — `xcrun simctl spawn booted defaults write "$BUNDLE" autoplay -int 1` 후 재실행하면 사람 입력 없이 플레이한다. 화면 상태별로 `xcrun simctl io booted screenshot _workspace/qa/runtime/<state>.png`. 끝나면 `defaults delete "$BUNDLE" autoplay`
 3. **사람 입력 경로** — autoplay 를 끄고 happy path 와 실패 경로(패배, 빠른 연타, 앱 백그라운드 → 복귀)를 직접 밟는다
-4. 시뮬레이터를 띄우지 못하면 판정은 `BLOCKED`(사유 포함)이고 PASS 로 세지 않는다. 그때만 `npm run unity -- render` PNG 로 정적 화면을 보조 확인한다
+4. **iPhone Duo** — Xcode 27.1+ 의 Duo 시뮬레이터가 있으면 접힘·펼침에서 각 상태를 보고, 플레이 중 접기→펴기→접기 해 레이아웃·진행 상태가 유지되는지 확인한다. 없으면 이 항목만 `BLOCKED` 이고 `npm run unity -- render` 의 `duo-inner/*.png` 로 보조 확인한다 (`docs/rules/runtime-testing.md` "창 크기 변화")
+5. 시뮬레이터를 띄우지 못하면 판정은 `BLOCKED`(사유 포함)이고 PASS 로 세지 않는다. 그때만 `npm run unity -- render` PNG 로 정적 화면을 보조 확인한다
 
 ## 검수 체크리스트
 
@@ -56,6 +57,7 @@ xcrun simctl launch --console-pty booted "$BUNDLE"   # Unity 로그([Game] ...) 
 ### 디자인 일관성
 - [ ] 색·타이포·간격이 토큰과 일치, 텍스트 잘림 없음
 - [ ] 모든 HUD 가 safe area 안 (노치·다이내믹 아일랜드·홈 인디케이터 기기에서 확인)
+- [ ] 넓은 창(펼친 iPhone Duo, `duo-inner` 렌더)에서 UI 가 잘리지 않음
 
 ### 접근성
 - [ ] 터치 타겟 ≥ 44pt, 버튼 간 간격 충분

@@ -22,7 +22,7 @@ description: "게임 비주얼 시스템을 설계하고 C# 토큰(Presentation/
 
 ### Step 2: 토큰
 - 컬러: 배경·표면·잉크(본문)·강조·위험·성공, 상태별 색(피격·완벽 판정 등). 대비 4.5:1 이상(본문)
-- 타이포: 기준 해상도 **1080×2340, 가로 맞춤**(CanvasScaler `matchWidthOrHeight = 0`) 단위로 Display/Title/Body/Caption 크기. 폰트는 Noto Sans KR(OFL, `Content/Fonts/`)
+- 타이포: 기준 해상도 **1080×2340, Expand**(CanvasScaler `screenMatchMode = Expand`, 세로 폰은 가로 맞춤) 단위로 Display/Title/Body/Caption 크기. 폰트는 Noto Sans KR(OFL, `Content/Fonts/`)
 - 간격·터치 타깃: 4의 배수 간격, 터치 타깃 최소 132 기준 px(약 44pt), safe area 안쪽 여백
 - `unity/Assets/Game/Presentation/Theme.cs` 에 `static readonly Color` / `const int` 로 둔다. 화면 코드에 색·크기 리터럴을 흩뿌리지 않는다.
 

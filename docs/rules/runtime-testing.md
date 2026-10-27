@@ -25,7 +25,16 @@ xcrun simctl launch --console-pty booted <bundle id>   # Unity Debug.Log 가 터
 
 - 캡처·성능 측정용 자동 플레이: `xcrun simctl spawn booted defaults write <bundle id> autoplay -int 1` 후 재실행. 끝나면 `xcrun simctl spawn booted defaults delete <bundle id> autoplay`. iOS `defaults` 가 곧 PlayerPrefs 다.
 - 스크린샷: `xcrun simctl io booted screenshot <file>.png` (디자인 리뷰 캡처의 정본).
-- 시뮬레이터 없이 화면만 볼 때는 `npm run unity -- render`(`Build/render-check/*.png`). 시뮬레이터 캡처를 대신하지는 않는다.
+- 시뮬레이터 없이 화면만 볼 때는 `npm run unity -- render`(`Build/render-check/*.png`, 펼친 iPhone Duo 비율은 `duo-inner/*.png`). 시뮬레이터 캡처를 대신하지는 않는다.
+
+### 창 크기 변화 — iPhone Duo (2027-04 부터)
+
+iPhone Duo 는 접고 펴면 게임이 켜진 채로 창 크기가 바뀐다(outer 1398×2034 ↔ inner 2007×2853, inner 는 거의 4:3 에 가깝게 넓다). iOS 27.1 SDK 이상으로 빌드하면 inner 화면 전체를 쓰고, 2027-04 부터 Apple 이 Duo 대응과 Duo 스크린샷을 요구한다. portrait 고정은 창 비율을 고정하지 않는다.
+
+- CanvasScaler 는 `ScreenMatchMode.Expand`(verify 가 본다). 넓은 창에서 UI 가 잘리지 않고 좌우 여백이 늘어난다
+- safe area 와 화면 크기는 `Update` 에서 바뀔 때마다 다시 적용한다. 크기를 `Start`/`Awake` 에서 한 번만 읽어 캐시하지 않는다
+- 화면을 바꾸면 `npm run unity -- render` 의 `duo-inner/*.png` 에서 잘림·빈 공간을 먼저 본다
+- 검증: Xcode 27.1+ 의 iPhone Duo 시뮬레이터에서 접힘·펼침 각각 Title·Play·Result 를 보고, 플레이 중에 접기→펴기→접기 해 점수·타이머·입력이 이어지는지 본다. Duo 시뮬레이터가 없으면 이 항목만 `BLOCKED` 로 기록한다
 
 ## Android
 

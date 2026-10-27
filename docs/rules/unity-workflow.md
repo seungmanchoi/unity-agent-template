@@ -72,8 +72,8 @@ Game.Tests.EditMode
 
 ## 모바일 UI (uGUI, 코드로 생성)
 
-- `CanvasScaler`: `ScaleWithScreenSize`, 기준 해상도 **1080×2340**, `matchWidthOrHeight = 0`(가로 맞춤).
-- 모든 UI 는 `SafeArea` RectTransform 아래에 두고, `Screen.safeArea` 가 바뀔 때 앵커를 다시 계산한다. Canvas 를 만드는 파일에 `Screen.safeArea` 가 없으면 verify 가 실패한다.
+- `CanvasScaler`: `ScaleWithScreenSize`, 기준 해상도 **1080×2340**, `screenMatchMode = Expand`. 캔버스가 기준보다 작아지지 않아 세로 폰은 가로 맞춤, 펼친 iPhone Duo 같은 넓은 창은 세로 맞춤이 된다. `matchWidthOrHeight = 0` 만 쓰면 넓은 창에서 기준 높이가 1535 까지 줄어 아래가 잘린다.
+- 모든 UI 는 `SafeArea` RectTransform 아래에 두고, `Screen.safeArea` 나 화면 크기가 바뀔 때 앵커를 다시 계산한다. Canvas 를 만드는 파일에 `Screen.safeArea` 가 없으면 verify 가 실패한다.
 - 터치 영역은 기준 해상도에서 **132px 이상**(약 44pt).
 - 폰트: Noto Sans KR 동적 폰트(`Content/Fonts`, OFL). 새 폰트·아트는 `THIRD_PARTY_ASSETS.md` 에 출처를 적는다.
 - 한 씬 상태 기계(Title → Play → Result 등)로 충분하다. 화면이 늘어도 씬을 나누기 전에 상태를 늘린다.

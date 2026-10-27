@@ -22,7 +22,7 @@ description: "코드로 만드는 uGUI 에 새 화면(상태)을 추가하는 �
 - 요소가 많은 화면: `Presentation/{Name}Screen.cs` 에 빌더 클래스를 두고(`Build(RectTransform safe)`, `Show(bool)`, `Render(...)`) 컨트롤러가 소유한다
 
 ### Step 2: 만들기 규칙
-- 모든 요소는 `SafeArea` RectTransform 아래에 둔다(배경·비네트만 예외). 새 Canvas 를 만들면 `CanvasScaler`(ScaleWithScreenSize, 1080×2340, `matchWidthOrHeight = 0`)와 `Screen.safeArea` 적용을 함께 넣는다 — 없으면 `npm run verify` 가 실패한다
+- 모든 요소는 `SafeArea` RectTransform 아래에 둔다(배경·비네트만 예외). 새 Canvas 를 만들면 `CanvasScaler`(ScaleWithScreenSize, 1080×2340, `screenMatchMode = Expand`)와 `Screen.safeArea` 적용을 함께 넣는다 — 없으면 `npm run verify` 가 실패한다
 - 색·글자 크기·간격은 `Theme` 토큰만 쓴다. 폰트는 컨트롤러가 받은 Noto Sans KR
 - 터치 타깃 최소 132 기준 px(약 44pt). 탭 판정은 `RectTransformUtility.ScreenPointToLocalPointInRectangle` 로 한다
 - 입력은 Input System(`Pointer.current`, `Touchscreen.current`). 옛 `UnityEngine.Input` 금지

@@ -47,7 +47,7 @@ Unity 실행은 디스크·시간이 든다. Quick QA(Phase 4 서브스텝)는 `
 - [ ] ProjectSettings 변경이 의도된 것인지 (빌드가 바꾼 buildNumber 같은 잡음은 커밋하지 않는다)
 
 ### 4. Presentation
-- [ ] CanvasScaler 1080×2340, `matchWidthOrHeight = 0`, 모든 HUD 가 safe area 안
+- [ ] CanvasScaler 1080×2340, `screenMatchMode = Expand`, 모든 HUD 가 safe area 안
 - [ ] 색·크기는 `Theme.cs` 토큰, 터치 타겟 ≥ 44pt
 - [ ] 매 프레임 할당·`GetComponent`·`Find` 없음
 - [ ] 비민감 값만 PlayerPrefs
